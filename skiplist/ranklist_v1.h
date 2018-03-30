@@ -64,7 +64,7 @@ public:
     iterator GetTopRank(const unsigned long rank) {
         if (rank > _rank_list.Lenth())
             return _rank_list.end();
-        return _rank_list.FirstInRangeByRank(lib_tools::Range(rank, rank));
+        return _rank_list.FirstInRangeByRank(Range(rank, rank));
     }
 
     iterator begin() { return _rank_list.begin(); }
@@ -72,7 +72,7 @@ public:
     iterator last() { return _rank_list.last(); }
 
 private:
-    lib_tools::SkipList<Key, Data> _rank_list;
+    SkipListType _rank_list;
     std::unordered_map<Data, Key> _key_map;
 
     unsigned _max_size;
