@@ -8,12 +8,12 @@
 #include <unordered_map>
 #include "skiplist.h"
 
-namespace ranklist {
+namespace lib_tools {
 
-    template<typename Key, typename Data = int>
+    template<typename Key, typename Data = int, typename DefaultCmp = DefaultValCmp<Data>>
     class RankList {
     public:
-        typedef lib_tools::SkipList<Key, Data> SkipListType;
+        typedef SkipList<Key, Data, DefaultCmp> SkipListType;
         typedef typename SkipListType::iterator iterator;
 
         RankList(const unsigned max_size) : _max_size(max_size) { }
@@ -38,8 +38,8 @@ namespace ranklist {
             auto itr = _key_map.find(identify);
             if (_key_map.end() == itr)
                 return;
-            _key_map.erase(itr);
             _rank_list.Delete(itr->second, itr->first);
+            _key_map.erase(itr);
         }
 
         bool Update(Key key, Data identify) {

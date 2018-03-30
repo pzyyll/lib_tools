@@ -27,21 +27,25 @@ struct Key {
 };
 
 int main() {
+    lib_tools::RankList<Key> rank_list(10);
 
-    ranklist::RankList<Key> rank_list(10);
-
+    //Insert func
     for (int i = 1; i < 20; ++i) {
         Key k(rand()%5, i);
         rank_list.Insert(k, i);
     }
 
+    //Range-for at ranklist
     for (auto itr : rank_list)
     {
         std::cout << "id : " << itr.second << std::endl;
         std::cout << "key_info : " << itr.first.val << "|" << itr.first.id << std::endl;
     }
 
+    //Delete by data-identify
     rank_list.Delete(15);
+
+    //Updata func
     std::cout << "---update---" << std::endl;
     rank_list.Update(Key(15, 7), 7);
     for (auto itr : rank_list)
@@ -50,11 +54,11 @@ int main() {
         std::cout << "key_info : " << itr.first.val << "|" << itr.first.id << std::endl;
     }
 
+    //Get rank-posion by data-identify
     std::cout << rank_list.GetRank(1) << std::endl;
     std::cout << rank_list.GetRank(2) << std::endl;
 
-
-
+    //Get the top rank posion info iterator
     std::cout << "----" << std::endl;
     auto begin_itr = rank_list.GetTopRank(8);
     for (int i = 0; i < 4 && begin_itr != rank_list.end(); ++i,++begin_itr)
