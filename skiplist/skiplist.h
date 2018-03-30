@@ -44,7 +44,7 @@ struct Range {
 template <typename T>
 struct Data {
     T key_val;
-    unsigned lru;
+    unsigned lru;  //no use
 };
 
 template <typename T>
