@@ -1,6 +1,6 @@
-//
-// Created by czl17 on 2018-3-30.
-//
+// ranklist_v1.h
+// @Created by czl17 on 2018-3-30.
+// @brief ranklist implement by skiplist with hashtable
 
 #ifndef SKIPLIST_RANKLIST_V1_H
 #define SKIPLIST_RANKLIST_V1_H
@@ -10,72 +10,74 @@
 
 namespace lib_tools {
 
-    template<typename Key, typename Data = int, typename DefaultCmp = DefaultValCmp<Data>>
-    class RankList {
-    public:
-        typedef SkipList<Key, Data, DefaultCmp> SkipListType;
-        typedef typename SkipListType::iterator iterator;
+template<typename Key, typename Data = int,
+         typename DefaultCmp = DefaultValCmp<Data>>
+class RankList {
+public:
+    typedef SkipList<Key, Data, DefaultCmp> SkipListType;
+    typedef typename SkipListType::iterator iterator;
 
-        RankList(const unsigned max_size) : _max_size(max_size) { }
+    explicit RankList(const unsigned max_size) : _max_size(max_size) { }
 
-        bool Insert(Key key, Data identify) {
-            if (_key_map.find(identify) != _key_map.end())
-                return false;
-            if (!_key_map.insert(std::make_pair(identify, key)).second)
-                return false;
-            _rank_list.Insert(key, identify);
+    bool Insert(Key key, Data identify) {
+        if (_key_map.find(identify) != _key_map.end())
+            return false;
+        if (!_key_map.insert(std::make_pair(identify, key)).second)
+            return false;
+        _rank_list.Insert(key, identify);
 
-            if (_rank_list.Lenth() > _max_size) {
-                auto lastitr = _rank_list.last();
-                _key_map.erase(lastitr->second);
-                _rank_list.Delete(lastitr);
-            }
-
-            return true;
+        if (_rank_list.Lenth() > _max_size) {
+            auto lastitr = _rank_list.last();
+            _key_map.erase(lastitr->second);
+            _rank_list.Delete(lastitr);
         }
 
-        void Delete(Data identify) {
-            auto itr = _key_map.find(identify);
-            if (_key_map.end() == itr)
-                return;
-            _rank_list.Delete(itr->second, itr->first);
-            _key_map.erase(itr);
-        }
+        return true;
+    }
 
-        bool Update(Key key, Data identify) {
-            auto finditr = _key_map.find(identify);
+    void Delete(Data identify) {
+        auto itr = _key_map.find(identify);
+        if (_key_map.end() == itr)
+            return;
+        _rank_list.Delete(itr->second, itr->first);
+        _key_map.erase(itr);
+    }
 
-            if (finditr == _key_map.end())
-                return Insert(key, identify);
+    bool Update(Key key, Data identify) {
+        auto finditr = _key_map.find(identify);
 
-            _rank_list.Delete(finditr->second, finditr->first);
-            _rank_list.Insert(key, identify);
-            finditr->second = key;
-        }
+        if (finditr == _key_map.end())
+            return Insert(key, identify);
 
-        unsigned long GetRank(Data identify) {
-            auto itr = _key_map.find(identify);
-            if (itr == _key_map.end())
-                return 0;
-            return _rank_list.GetRank(itr->second, itr->first);
-        }
+        _rank_list.Delete(finditr->second, finditr->first);
+        _rank_list.Insert(key, identify);
+        finditr->second = key;
+    }
 
-        iterator GetTopRank(const unsigned long rank) {
-            if (rank > _rank_list.Lenth())
-                return _rank_list.end();
-            return _rank_list.FirstInRangeByRank(lib_tools::Range(rank, rank));
-        }
+    unsigned long GetRank(Data identify) {
+        auto itr = _key_map.find(identify);
+        if (itr == _key_map.end())
+            return 0;
+        return _rank_list.GetRank(itr->second, itr->first);
+    }
 
-        iterator begin() { return _rank_list.begin(); }
-        iterator end() { return _rank_list.end(); }
-        iterator last() { return _rank_list.last(); }
+    iterator GetTopRank(const unsigned long rank) {
+        if (rank > _rank_list.Lenth())
+            return _rank_list.end();
+        return _rank_list.FirstInRangeByRank(lib_tools::Range(rank, rank));
+    }
 
-    private:
-        lib_tools::SkipList<Key, Data> _rank_list;
-        std::unordered_map<Data, Key> _key_map;
+    iterator begin() { return _rank_list.begin(); }
+    iterator end() { return _rank_list.end(); }
+    iterator last() { return _rank_list.last(); }
 
-        unsigned _max_size;
-    };
-} //namespace ranklist
+private:
+    lib_tools::SkipList<Key, Data> _rank_list;
+    std::unordered_map<Data, Key> _key_map;
+
+    unsigned _max_size;
+};
+
+} //namespace lib_tools
 
 #endif //SKIPLIST_RANKLIST_V1_H
