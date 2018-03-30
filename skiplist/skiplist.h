@@ -329,7 +329,7 @@ public:
         x = x->level[0].forward;
         if (NULL != x &&
                 score == x->data.key_val.first &&
-                cmp_(x->data.key_val.second, val)) {
+                    cmp_(x->data.key_val.second, val)) {
             DeleteNode(x, update);
             FreeNode(x);
             return 0;
@@ -338,10 +338,17 @@ public:
         return -1; //not found
     }
 
+    int Delete(iterator itr) {
+        if (itr == end())
+            return -1;
+        return Delete(itr->first, itr->second);
+    }
+
     unsigned Lenth() { return lenth_; }
 
     iterator begin() { return iterator(head_->level[0].forward, tail_->level[0].forward); }
     iterator end() { return iterator(tail_->level[0].forward, tail_->level[0].forward); }
+    iterator last() { return iterator(tail_, tail_->level[0].forward); }
 
 private:
     void InitHead() {

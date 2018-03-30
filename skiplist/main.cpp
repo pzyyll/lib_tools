@@ -74,6 +74,8 @@ int main() {
     }
 
     ks.Delete(k3, "k3");
+    ks.Delete(ks.last());
+    ks.Delete(ks.last());
     cout << "-----ks delete k3" << endl;
 
     for (auto itr = ks.begin(); itr != ks.end(); ++itr)
