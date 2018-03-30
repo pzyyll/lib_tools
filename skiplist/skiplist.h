@@ -32,7 +32,8 @@ inline int skRandomLevel() {
 }
 
 struct Range {
-    Range(unsigned long long min_, unsigned long long max_) : min(min_), max(max_) { }
+    Range(unsigned long long min_, unsigned long long max_)
+            : min(min_), max(max_) { }
     ~Range() { }
 
     unsigned long long min;
@@ -124,7 +125,9 @@ private:
 };
 
 
-template <typename Key, typename Tp, typename ValCmp = DefaultValCmp<Tp>, typename Alloc = std::allocator<Tp>>
+template <typename Key, typename Tp,
+          typename ValCmp = DefaultValCmp<Tp>,
+          typename Alloc = std::allocator<Tp>>
 class SkipList {
 public:
     typedef Key key_type;
@@ -171,9 +174,9 @@ public:
         unsigned long rank = 0;
         sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
-            while (NULL != x->level[i].forward
-                   && (x->level[i].forward->data.key_val.first < score
-                       || (x->level[i].forward->data.key_val.first == score))) {
+            while (NULL != x->level[i].forward &&
+                    (x->level[i].forward->data.key_val.first < score ||
+                        (x->level[i].forward->data.key_val.first == score))) {
                 rank += x->level[i].span;
                 x = x->level[i].forward;
                 if (cmp_(x->data.key_val.second, val)) {
@@ -197,7 +200,8 @@ public:
         unsigned long traversed = 0;
         x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
-            while (x->level[i].forward && (traversed + x->level[i].span) < min) {
+            while (x->level[i].forward &&
+                    (traversed + x->level[i].span) < min) {
                 traversed += x->level[i].span;
                 x = x->level[i].forward;
             }
@@ -247,7 +251,7 @@ public:
         for (int i = level_ - 1; i >= 0; --i) {
             while (x->level[i].forward &&
                     (x->level[i].forward->data.key_val.first < max ||
-                            x->level[i].forward->data.key_val.first == max)) {
+                        x->level[i].forward->data.key_val.first == max)) {
                 x = x->level[i].forward;
             }
         }
@@ -268,10 +272,10 @@ public:
         x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
             ranks[i] = i == (level_ - 1) ? 0 : ranks[i + 1];
-            while (NULL != x->level[i].forward
-                   && (x->level[i].forward->data.key_val.first < score
-                       || (x->level[i].forward->data.key_val.first == score
-                           && !cmp_(x->level[i].forward->data.key_val.second, val)))) {
+            while (NULL != x->level[i].forward &&
+                    (x->level[i].forward->data.key_val.first < score ||
+                        (x->level[i].forward->data.key_val.first == score &&
+                            !cmp_(x->level[i].forward->data.key_val.second, val)))) {
                 ranks[i] += x->level[i].span;
                 x = x->level[i].forward;
             }
@@ -318,10 +322,10 @@ public:
         sl_node_pointer update[MAXLEVEL], x;
         x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
-            while (NULL != x->level[i].forward
-                   && (x->level[i].forward->data.key_val.first < score
-                       || (x->level[i].forward->data.key_val.first == score
-                           && !cmp_(x->level[i].forward->data.key_val.second, val)))) {
+            while (NULL != x->level[i].forward &&
+                    (x->level[i].forward->data.key_val.first < score ||
+                        (x->level[i].forward->data.key_val.first == score &&
+                            !cmp_(x->level[i].forward->data.key_val.second, val)))) {
                 x = x->level[i].forward;
             }
             update[i] = x;
@@ -381,7 +385,9 @@ private:
         --lenth_;
     }
 
-    sl_node_pointer MakeNode(const int lvl, const key_type &score, const data_type &data) {
+    sl_node_pointer MakeNode(const int lvl,
+            const key_type &score,
+            const data_type &data) {
         sl_node_pointer pNode = alloc_.allocate(1);
         alloc_.construct(pNode, lvl, std::make_pair(score, data));
 

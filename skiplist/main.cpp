@@ -94,6 +94,7 @@ int main() {
     {
         std::cout << itr->first.val << " : ";
         std::cout << itr->second << endl;
+        itr->second += 1;
     }
 
     for (auto itr : sl_ki)
