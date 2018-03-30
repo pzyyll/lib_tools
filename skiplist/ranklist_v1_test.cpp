@@ -41,6 +41,7 @@ int main() {
         std::cout << "key_info : " << itr.first.val << "|" << itr.first.id << std::endl;
     }
 
+    rank_list.Delete(15);
     std::cout << "---update---" << std::endl;
     rank_list.Update(Key(15, 7), 7);
     for (auto itr : rank_list)
@@ -51,6 +52,8 @@ int main() {
 
     std::cout << rank_list.GetRank(1) << std::endl;
     std::cout << rank_list.GetRank(2) << std::endl;
+
+
 
     std::cout << "----" << std::endl;
     auto begin_itr = rank_list.GetTopRank(8);
