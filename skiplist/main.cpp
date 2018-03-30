@@ -11,13 +11,13 @@ using namespace lib_tools;
 struct Key {
     Key() : val(0), id(0) { }
     Key(const int v, const int i) : val(v), id(i) { }
-    bool operator<(const Key &k) {
+    bool operator<(const Key &k) const {
         if (val != k.val)
             return val > k.val;
         return id < k.id;
     }
 
-    bool operator==(const Key &k) {
+    bool operator==(const Key &k) const {
         if (val != k.val)
             return false;
         return id == k.id;
@@ -26,6 +26,7 @@ struct Key {
     int val;
     int id;
 };
+
 SkipList<double, string> sl;
 
 map<int, int> ii_map;
@@ -35,7 +36,7 @@ int main() {
     sl.Insert(2, "hao");
     sl.Insert(4, "lis");
 
-    for (auto itr = sl.being(); itr != sl.end(); ++itr) {
+    for (auto itr = sl.begin(); itr != sl.end(); ++itr) {
         cout << itr->first << ":";
         cout << itr->second << endl;
     }
@@ -66,20 +67,37 @@ int main() {
     cout << ks.FirstInRangeByRank(Range(2,2))->second << endl;
     cout << ks.GetRank(Key(1,2), "czlh") << endl;
 
-    for (auto itr = ks.being(); itr != ks.end(); ++itr)
+    for (auto itr = ks.begin(); itr != ks.end(); ++itr)
     {
-        cout << itr->first.id << endl;
+        cout << itr->first.val << " : " << itr->first.id << " ";
         cout << itr->second << endl;
     }
 
-    std::map<int, int> iimap;
+    ks.Delete(k3, "k3");
+    cout << "-----ks delete k3" << endl;
 
-    iimap.insert({1,2});
-    iimap.insert({3,3});
+    for (auto itr = ks.begin(); itr != ks.end(); ++itr)
+    {
+        cout << itr->first.val << " : " << itr->first.id << " ";
+        cout << itr->second << endl;
+    }
 
-    std::map<int, int>::iterator itr = iimap.begin();
-    std::pair<int, int> *ppair = new std::pair<int, int>(1,2);
-    cout << ppair->first << endl;
+    cout << "ks lenth : " << ks.Lenth() << endl;
+    std::cout << "----------------" << std::endl;
+
+    SkipList<Key, int> sl_ki;
+    sl_ki.Insert(k1, k1.id);
+    sl_ki.Insert(k2, k2.id);
+    for (auto itr = sl_ki.begin(); itr != sl_ki.end(); ++itr)
+    {
+        std::cout << itr->first.val << " : ";
+        std::cout << itr->second << endl;
+    }
+
+    for (auto itr : sl_ki)
+    {
+        cout << itr.second << endl;
+    }
 
     std::cout << "Hello, World!" << std::endl;
     return 0;

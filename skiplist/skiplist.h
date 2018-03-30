@@ -1,6 +1,7 @@
 // skiplist.h
 // @Created by czllo on 2017/4/9.
 // @brief A ranklist implement by skiplist.
+//        key 可以自定义，但是必须提供 < 以及 == 操作.
 
 #ifndef SKIPLIST_SKIPLIST_H
 #define SKIPLIST_SKIPLIST_H
@@ -38,23 +39,23 @@ struct Range {
     unsigned long long max;
 };
 
-template <typename Key, typename Val>
+template <typename T>
 struct Data {
-    std::pair<Key, Val> key_val;
+    T key_val;
     unsigned lru;
 };
 
-template <typename Key, typename T>
+template <typename T>
 struct SkipListNode {
-    typedef Key key_type;
     typedef T val_type;
-    typedef Data<key_type, val_type> data_type;
+    typedef Data<val_type> data_type;
 
-    SkipListNode(int lvl, key_type score, const val_type &val, unsigned lru = 0)
+    //template <typename Tp> struct rebind { typedef SkipListNode<Tp> othre; };
+
+    SkipListNode(int lvl, val_type val, unsigned lru = 0)
             : //score(score),
               backward(NULL) {
-        data.key_val = {score,  val};
-        data.lru = lru;
+        data = {val, lru};
         level.resize(lvl);
     }
     ~SkipListNode() { }
@@ -77,62 +78,65 @@ public:
     }
 };
 
-template struct SkipListNode<double, std::string>;
-
 template <typename Tp>
-class SkipListItr {
+class SkipListIterator {
 public:
+    typedef Tp val_type;
     typedef Tp* pointer;
     typedef Tp& reference;
-    typedef SkipListItr<Tp> iterator;
-    typedef std::pair<typename Tp::key_type, typename Tp::val_type>* kv_pointer;
-    typedef std::pair<typename Tp::key_type, typename Tp::val_type>& kv_reference;
+    typedef SkipListIterator<Tp> self_type;
+    typedef SkipListNode<val_type>* sl_node_pointer;
 
-    SkipListItr(pointer it_, pointer end_) : pos(it_), end(end_) { }
+    SkipListIterator()
+            : pos(nullptr), end(nullptr) { }
+    SkipListIterator(sl_node_pointer it_, sl_node_pointer end_)
+            : pos(it_), end(end_) { }
 
-    SkipListItr() { }
-    kv_reference operator*() { return pos->data.key_val; }
-    kv_pointer operator->() { return &(operator*()); }
+    reference operator*() { return pos->data.key_val; }
+    pointer operator->() { return &(operator*()); }
 
-    iterator &operator++() {
+    self_type &operator++() {
         assert(pos != end);
         pos = pos->level[0].forward;
         return *this;
     }
-    iterator operator++(int) {
-        iterator tmp(*this);
+    self_type operator++(int) {
+        self_type tmp(*this);
         ++*this;
         return tmp;
     }
-    iterator &operator--() {
+    self_type &operator--() {
         assert(pos != end);
         pos = pos->backward;
         return *this;
     }
-    iterator operator--(int) {
-        iterator tmp(*this);
+    self_type operator--(int) {
+        self_type tmp(*this);
         --*this;
         return tmp;
     }
 
-    bool operator==(const iterator &it) const { return pos == it.pos; }
-    bool operator!=(const iterator &it) const { return pos != it.pos; }
+    bool operator==(const self_type &it) const { return pos == it.pos; }
+    bool operator!=(const self_type &it) const { return pos != it.pos; }
 
 private:
-    pointer pos, end;
+    sl_node_pointer pos, end;
 };
+
 
 template <typename Key, typename Tp, typename ValCmp = DefaultValCmp<Tp>, typename Alloc = std::allocator<Tp>>
 class SkipList {
 public:
     typedef Key key_type;
     typedef Tp data_type;
-    typedef SkipListNode<Key, Tp> sl_node;
+    typedef std::pair<key_type, data_type> val_type;
+    typedef SkipListNode<val_type> sl_node;
+    typedef sl_node* sl_node_pointer;
     typedef ValCmp cmp_type;
     typedef typename Alloc::template rebind<sl_node>::other node_alloc;
     typedef SkipList<Tp, ValCmp, Alloc>& reference;
     typedef SkipList<Tp, ValCmp, Alloc>* pointer;
-    typedef SkipListItr<sl_node> iterator;
+    typedef SkipListIterator<val_type> iterator;
 
     SkipList()
             : head_(NULL),
@@ -145,7 +149,7 @@ public:
     ~SkipList() { };
 
     iterator SearchFirst(key_type score) {
-        sl_node *x = head_;
+        sl_node_pointer x = head_;
         //int cnt = 0;
         for (int i = level_ - 1; i >= 0; --i) {
             while (NULL != x->level[i].forward
@@ -165,7 +169,7 @@ public:
 
     unsigned long GetRank(key_type score, const data_type &val) {
         unsigned long rank = 0;
-        sl_node *x = head_;
+        sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
             while (NULL != x->level[i].forward
                    && (x->level[i].forward->data.key_val.first < score
@@ -189,7 +193,7 @@ public:
             return end();
         }
 
-        sl_node *x;
+        sl_node_pointer x;
         unsigned long traversed = 0;
         x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
@@ -209,13 +213,13 @@ public:
         if (max < min)
             return end();
 
-        if (tail_->data.key_val.first < max) {
+        if (tail_->data.key_val.first < max)
             return end();
-        }
 
-        sl_node *x = head_;
+        sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
-            while (x->level[i].forward && (x->level[i].forward->data.key_val.first < min))
+            while (x->level[i].forward &&
+                    (x->level[i].forward->data.key_val.first < min))
                 x = x->level[i].forward;
         }
         x = x->level[0].forward;
@@ -234,11 +238,12 @@ public:
 
         if (tail_->data.key_val.first < min) {
             return end();
-        } else if (tail_->data.key_val.first < max || tail_->data.key_val.first == max) {
+        } else if (tail_->data.key_val.first < max ||
+                tail_->data.key_val.first == max) {
             return iterator(tail_, tail_->level[0].forward);
         }
 
-        sl_node *x = head_;
+        sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
             while (x->level[i].forward &&
                     (x->level[i].forward->data.key_val.first < max ||
@@ -257,7 +262,7 @@ public:
     }
 
     int Insert(key_type score, const data_type &val) {
-        sl_node *update[MAXLEVEL], *x;
+        sl_node_pointer update[MAXLEVEL], x;
         int ranks[MAXLEVEL] = {0};
 
         x = head_;
@@ -310,7 +315,7 @@ public:
     }
 
     int Delete(key_type score, const data_type &val) {
-        sl_node *update[MAXLEVEL], *x;
+        sl_node_pointer update[MAXLEVEL], x;
         x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
             while (NULL != x->level[i].forward
@@ -322,7 +327,9 @@ public:
             update[i] = x;
         }
         x = x->level[0].forward;
-        if (NULL != x && score == x->data.key_val.first && cmp_(x->data.key_val.second, val)) {
+        if (NULL != x &&
+                score == x->data.key_val.first &&
+                cmp_(x->data.key_val.second, val)) {
             DeleteNode(x, update);
             FreeNode(x);
             return 0;
@@ -333,7 +340,7 @@ public:
 
     unsigned Lenth() { return lenth_; }
 
-    iterator being() { return iterator(head_->level[0].forward, tail_->level[0].forward); }
+    iterator begin() { return iterator(head_->level[0].forward, tail_->level[0].forward); }
     iterator end() { return iterator(tail_->level[0].forward, tail_->level[0].forward); }
 
 private:
@@ -346,7 +353,7 @@ private:
         head_->backward = NULL;
     }
 
-    void DeleteNode(sl_node *x, sl_node *update[]) {
+    void DeleteNode(sl_node_pointer x, sl_node_pointer update[]) {
         for (int i = 0; i < level_; ++i) {
             if (update[i]->level[i].forward == x) {
                 update[i]->level[i].span += x->level[i].span - 1;
@@ -364,17 +371,17 @@ private:
 
         while (level_ > 1 && NULL == head_->level[level_-1].forward)
             --level_;
-        ++lenth_;
+        --lenth_;
     }
 
-    sl_node *MakeNode(int lvl, key_type score, const std::string &val) {
-        sl_node *pNode = alloc_.allocate(1);
-        alloc_.construct(pNode, lvl, score, val);
+    sl_node_pointer MakeNode(const int lvl, const key_type &score, const data_type &data) {
+        sl_node_pointer pNode = alloc_.allocate(1);
+        alloc_.construct(pNode, lvl, std::make_pair(score, data));
 
         return pNode;
     }
 
-    int FreeNode(sl_node *node) {
+    int FreeNode(sl_node_pointer node) {
         alloc_.destroy(node);
         alloc_.deallocate(node, 1);
         node = NULL;
@@ -382,7 +389,7 @@ private:
     }
 
 private:
-    sl_node *head_, *tail_;
+    sl_node_pointer head_, tail_;
     unsigned long lenth_;
     int level_;
 
