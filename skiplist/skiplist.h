@@ -102,7 +102,7 @@ public:
         pos = pos->level[0].forward;
         return *this;
     }
-    self_type operator++(int) {
+    const self_type operator++(int) {
         self_type tmp(*this);
         ++*this;
         return tmp;
@@ -112,7 +112,7 @@ public:
         pos = pos->backward;
         return *this;
     }
-    self_type operator--(int) {
+    const self_type operator--(int) {
         self_type tmp(*this);
         --*this;
         return tmp;
@@ -349,7 +349,7 @@ public:
         return Delete(itr->first, itr->second);
     }
 
-    unsigned Lenth() { return lenth_; }
+    unsigned long Lenth() { return lenth_; }
 
     iterator begin() { return iterator(head_->level[0].forward, tail_->level[0].forward); }
     iterator end() { return iterator(tail_->level[0].forward, tail_->level[0].forward); }
