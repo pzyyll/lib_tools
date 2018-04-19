@@ -63,6 +63,7 @@ struct SkipListNode {
     ~SkipListNode() { }
 
     struct SkipListLevel {
+        SkipListLevel() : forward(NULL), span(0) { }
         SkipListNode *forward;
         unsigned span;
     } /*level[]*/;
@@ -150,20 +151,19 @@ public:
     {
         InitHead();
     };
-    ~SkipList() { };
+    ~SkipList() {
+        Deinit();
+    };
 
     iterator SearchFirst(key_type score) {
         sl_node_pointer x = head_;
-        //int cnt = 0;
         for (int i = level_ - 1; i >= 0; --i) {
             while (NULL != x->level[i].forward
                    && x->level[i].forward->data.key_val.first < score) {
                 x = x->level[i].forward;
-                //++cnt;
             }
-            //++cnt;
         }
-        //std::cout << "cnt:" << cnt << std::endl;
+
         x = x->level[0].forward;
         if (x != NULL && x->data.key_val.first == score)
             return iterator(x, tail_->level[0].forward);
@@ -392,6 +392,8 @@ private:
         sl_node_pointer pNode = alloc_.allocate(1);
         alloc_.construct(pNode, lvl, std::make_pair(score, data));
 
+        //static int make = 0;
+        //std::cout << "Make:" << ++make << std::endl;
         return pNode;
     }
 
@@ -399,7 +401,20 @@ private:
         alloc_.destroy(node);
         alloc_.deallocate(node, 1);
         node = NULL;
+
+        //static int free = 0;
+        //std::cout << "Free:" << ++free << std::endl;
         return 0;
+    }
+
+    void Deinit() {
+        sl_node_pointer itr = head_;
+        sl_node_pointer next = head_->level[0].forward;
+        while(itr != NULL) {
+            FreeNode(itr);
+            itr = next;
+            next = next->level[0].forward;
+        }
     }
 
 private:

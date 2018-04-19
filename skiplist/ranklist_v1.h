@@ -1,6 +1,17 @@
 // ranklist_v1.h
 // @Created by czl17 on 2018-3-30.
 // @brief ranklist implement by skiplist with hashtable
+// Key             存储 key 值，例如分数值等，可重复，可自定义结构，需提供默认小于比较
+// Data            存储用户数据，可用于唯一识别标志
+// DefaultCmp      Data 比较算法
+//
+// func Insert     插入一个键值对, 存在则插入失败
+// func Delete     删除用户数据
+// func Update     更新一个键值对, 无则插入
+// func GetSize    元素个数
+// func GetRank    获取用户数据排行位置
+// func GetTopRank 返回排行第 top 的元素迭代器
+
 
 #ifndef SKIPLIST_RANKLIST_V1_H
 #define SKIPLIST_RANKLIST_V1_H
@@ -17,7 +28,9 @@ public:
     typedef SkipList<Key, Data, DefaultCmp> SkipListType;
     typedef typename SkipListType::iterator iterator;
 
-    explicit RankList(const unsigned max_size) : _max_size(max_size) { }
+    explicit RankList(const unsigned max_size = UINT32_MAX - 1) : _max_size(max_size) { }
+
+    ~RankList() = default;
 
     bool Insert(Key key, Data identify) {
         if (_key_map.find(identify) != _key_map.end())
@@ -52,6 +65,10 @@ public:
         _rank_list.Delete(finditr->second, finditr->first);
         _rank_list.Insert(key, identify);
         finditr->second = key;
+    }
+
+    unsigned long GetSize() {
+        return _rank_list.Lenth();
     }
 
     unsigned long GetRank(Data identify) {

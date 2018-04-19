@@ -27,7 +27,7 @@ struct Key {
 };
 
 int main() {
-    lib_tools::RankList<Key> rank_list(10);
+    lib_tools::RankList<Key> rank_list(30);
 
     //Insert func
     for (int i = 1; i < 20; ++i) {
@@ -66,6 +66,10 @@ int main() {
         std::cout << "id : " << begin_itr->second << std::endl;
         std::cout << "key_info : " << begin_itr->first.val << "|" << begin_itr->first.id << std::endl;
     }
+
+    std::cout << rank_list.GetSize() << std::endl;
+
+    std::cout << "end" << std::endl;
 
     return 0;
 }
