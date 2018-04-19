@@ -411,7 +411,7 @@ private:
 
     void Deinit() {
         sl_node_pointer itr = head_;
-        sl_node_pointer next = NULL;//head_->level[0].forward;
+        sl_node_pointer next = NULL;
         while(itr != NULL) {
             next = itr->level[0].forward;
             FreeNode(itr);
