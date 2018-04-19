@@ -51,6 +51,8 @@ template <typename T>
 struct SkipListNode {
     typedef T val_type;
     typedef Data<val_type> data_type;
+    typedef SkipListNode<T> self_type;
+    typedef self_type* pointer;
 
     //template <typename Tp> struct rebind { typedef SkipListNode<Tp> othre; };
 
@@ -64,12 +66,12 @@ struct SkipListNode {
 
     struct SkipListLevel {
         SkipListLevel() : forward(NULL), span(0) { }
-        SkipListNode *forward;
+        pointer forward;
         unsigned span;
     } /*level[]*/;
 
     data_type data;
-    SkipListNode *backward;
+    pointer backward;
     std::vector<SkipListLevel> level;
 };
 
@@ -409,11 +411,11 @@ private:
 
     void Deinit() {
         sl_node_pointer itr = head_;
-        sl_node_pointer next = head_->level[0].forward;
+        sl_node_pointer next = NULL;//head_->level[0].forward;
         while(itr != NULL) {
+            next = itr->level[0].forward;
             FreeNode(itr);
             itr = next;
-            next = next->level[0].forward;
         }
     }
 
