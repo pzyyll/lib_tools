@@ -5,32 +5,39 @@
 #include <iostream>
 #include <cstdlib>
 #include "ranklist_v1.h"
+#include <functional>
+
+using namespace std;
 
 struct Key {
     Key() : val(-1), id(-1) { }
     Key(const int v, const int i) : val(v), id(i) { }
 
+    /*
     bool operator< (const Key &k) const {
         if (val != k.val)
             return val > k.val;
         return id < k.id;
     }
-
-    bool operator== (const Key &k) const {
-        if (val != k.val)
-            return false;
-        return id == k.id;
-    }
+    */
 
     int val;
     int id;
 };
 
+struct KeyLess {
+    bool operator()(const Key &key1, const Key &key2) const {
+        if (key1.val != key2.val)
+            return key1.val > key2.val;
+        return key1.id < key2.id;
+    }
+};
+
 int main() {
-    lib_tools::RankList<Key> rank_list(30);
+    lib_tools::RankList<Key, int, KeyLess> rank_list(30);
 
     //Insert func
-    for (int i = 1; i < 20; ++i) {
+    for (int i = 1; i < 30; ++i) {
         Key k(rand()%5, i);
         rank_list.Insert(k, i);
     }
@@ -70,6 +77,8 @@ int main() {
     std::cout << rank_list.GetSize() << std::endl;
 
     std::cout << "end" << std::endl;
+
+    std::cout << "----" << std::endl;
 
     return 0;
 }

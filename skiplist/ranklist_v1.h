@@ -22,10 +22,11 @@
 namespace lib_tools {
 
 template<typename Key, typename Data = int,
-         typename DefaultCmp = DefaultValCmp<Data>>
+         typename KeyCompare = std::less<Key>,
+         typename ValCompare = std::equal_to<Data>>
 class RankList {
 public:
-    typedef SkipList<Key, Data, DefaultCmp> SkipListType;
+    typedef SkipList<Key, Data, KeyCompare, ValCompare> SkipListType;
     typedef typename SkipListType::iterator iterator;
 
     explicit RankList(const unsigned max_size = UINT32_MAX - 1) : _max_size(max_size) { }
