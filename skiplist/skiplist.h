@@ -43,15 +43,8 @@ struct Range {
 };
 
 template <typename T>
-struct Data {
-    T key_val;
-    unsigned lru;  //no use
-};
-
-template <typename T>
 struct SkipListNode {
     typedef T val_type;
-    typedef Data<val_type> data_type;
     typedef SkipListNode<T> self_type;
     typedef self_type* pointer;
 
@@ -59,8 +52,8 @@ struct SkipListNode {
 
     SkipListNode(int lvl, val_type val, unsigned lru = 0)
             : //score(score),
+              data(val),
               backward(NULL) {
-        data = {val, lru};
         level.resize(lvl);
     }
     ~SkipListNode() { }
@@ -71,7 +64,7 @@ struct SkipListNode {
         unsigned span;
     } /*level[]*/;
 
-    data_type data;
+    val_type data;
     pointer backward;
     std::vector<SkipListLevel> level;
 };
@@ -90,7 +83,7 @@ public:
     SkipListIterator(sl_node_pointer it_, sl_node_pointer end_)
             : pos(it_), end(end_) { }
 
-    reference operator*() { return pos->data.key_val; }
+    reference operator*() { return pos->data; }
     pointer operator->() { return &(operator*()); }
 
     self_type &operator++() {
@@ -130,7 +123,7 @@ class SkipList {
 public:
     typedef Key key_type;
     typedef Tp data_type;
-    typedef std::pair<key_type, data_type> val_type;
+    typedef std::pair<const key_type, const data_type> val_type;
     typedef SkipListNode<val_type> sl_node;
     typedef sl_node* sl_node_pointer;
     typedef KeyCmp key_cmp_type;
@@ -153,23 +146,37 @@ public:
         Deinit();
     };
 
+    iterator Search(key_type score, const data_type &val) {
+        sl_node_pointer x = head_;
+        for (int i = level_ - 1; i >= 0; --i) {
+            while (NULL != x->level[i].forward &&
+                    (key_cmp_(x->level[i].forward->data.first, score) ||
+                     (KeyEqual(score, x->level[i].forward->data.first) &&
+                      !cmp_(val, x->level[i].forward->data.second))))
+                x = x->level[i].forward;
+        }
+
+        x = x->level[0].forward;
+        if (x != NULL &&
+             KeyEqual(score, x->data.first) &&
+              cmp_(val, x->data.second))
+            return iterator(x, tail_->level[0].forward);
+        return end();
+    }
+
     iterator SearchFirst(key_type score) {
         sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
             while (NULL != x->level[i].forward &&
-                    key_cmp_(x->level[i].forward->data.key_val.first, score)) {
+                    key_cmp_(x->level[i].forward->data.first, score)) {
                 x = x->level[i].forward;
             }
         }
 
         x = x->level[0].forward;
-        if (x != NULL &&
-             (!key_cmp_(x->data.key_val.first, score) &&
-               !key_cmp_(score, x->data.key_val.first))
-            /*x->data.key_val.first == score*/)
+        if (x != NULL && KeyEqual(score, x->data.first))
             return iterator(x, tail_->level[0].forward);
-        else
-            return end();
+        return end();
     }
 
     unsigned long GetRank(key_type score, const data_type &val) {
@@ -177,10 +184,10 @@ public:
         sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
             while (NULL != x->level[i].forward &&
-                   !key_cmp_(score, x->level[i].forward->data.key_val.first)) {
+                   !key_cmp_(score, x->level[i].forward->data.first)) {
                 rank += x->level[i].span;
                 x = x->level[i].forward;
-                if (cmp_(x->data.key_val.second, val)) {
+                if (cmp_(x->data.second, val)) {
                     return rank;
                 }
             }
@@ -220,7 +227,7 @@ public:
             return end();
 
         //tail_->data.key_val.first < max
-        if (key_cmp_(tail_->data.key_val.first, max))
+        if (key_cmp_(tail_->data.first, max))
             return end();
 
         sl_node_pointer x = head_;
@@ -233,7 +240,7 @@ public:
         assert(x != NULL);
 
         //注意找到的节点分数不要大于max
-        if (max < x->data.key_val.first)
+        if (max < x->data.first)
             return end();
 
         return iterator(x, tail_->level[0].forward);
@@ -245,9 +252,9 @@ public:
             return end();
 
         //tail_->data.key_val.first < min
-        if (key_cmp_(tail_->data.key_val.first, min)) {
+        if (key_cmp_(tail_->data.first, min)) {
             return end();
-        } else if (!key_cmp_(max, tail_->data.key_val.first)) {
+        } else if (!key_cmp_(max, tail_->data.first)) {
             return iterator(tail_, tail_->level[0].forward);
         }
 
@@ -262,7 +269,7 @@ public:
         assert(x != NULL);
 
         //x->data.key_val.first < min
-        if (key_cmp_(x->data.key_val.first, min)) {
+        if (key_cmp_(x->data.first, min)) {
             return end();
         }
 
@@ -277,9 +284,9 @@ public:
         for (int i = level_ - 1; i >= 0; --i) {
             ranks[i] = i == (level_ - 1) ? 0 : ranks[i + 1];
             while (NULL != x->level[i].forward &&
-                    (key_cmp_(x->level[i].forward->data.key_val.first, score) ||
-                      (KeyEqual(x->level[i].forward->data.key_val.first, score) &&
-                        !cmp_(x->level[i].forward->data.key_val.second, val)))) {
+                    (key_cmp_(x->level[i].forward->data.first, score) ||
+                      (KeyEqual(x->level[i].forward->data.first, score) &&
+                        !cmp_(x->level[i].forward->data.second, val)))) {
                 ranks[i] += x->level[i].span;
                 x = x->level[i].forward;
             }
@@ -327,17 +334,17 @@ public:
         x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
             while (NULL != x->level[i].forward &&
-                    (key_cmp_(x->level[i].forward->data.key_val.first, score) ||
-                      (KeyEqual(x->level[i].forward->data.key_val.first, score) &&
-                        !cmp_(x->level[i].forward->data.key_val.second, val)))) {
+                    (key_cmp_(x->level[i].forward->data.first, score) ||
+                      (KeyEqual(x->level[i].forward->data.first, score) &&
+                        !cmp_(x->level[i].forward->data.second, val)))) {
                 x = x->level[i].forward;
             }
             update[i] = x;
         }
         x = x->level[0].forward;
         if (NULL != x &&
-             KeyEqual(score, x->data.key_val.first) &&
-              cmp_(x->data.key_val.second, val)) {
+             KeyEqual(score, x->data.first) &&
+              cmp_(x->data.second, val)) {
             DeleteNode(x, update);
             FreeNode(x);
             return 0;

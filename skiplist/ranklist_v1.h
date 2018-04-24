@@ -3,13 +3,15 @@
 // @brief ranklist implement by skiplist with hashtable
 // Key             存储 key 值，例如分数值等，可重复，可自定义结构，需提供默认小于比较
 // Data            存储用户数据，可用于唯一识别标志
-// DefaultCmp      Data 比较算法
+// KeyCompare      Key 比较算法
+// ValCompare      Data 比较算法
 //
 // func Insert     插入一个键值对, 存在则插入失败
 // func Delete     删除用户数据
 // func Update     更新一个键值对, 无则插入
 // func GetSize    元素个数
 // func GetRank    获取用户数据排行位置
+// func GetByData  通过用户数据获取存储的元素, 返回迭代器
 // func GetTopRank 返回排行第 top 的元素迭代器
 
 
@@ -33,7 +35,7 @@ public:
 
     ~RankList() = default;
 
-    bool Insert(Key key, Data identify) {
+    bool Insert(const Key &key, const Data &identify) {
         if (_key_map.find(identify) != _key_map.end())
             return false;
         if (!_key_map.insert(std::make_pair(identify, key)).second)
@@ -49,7 +51,7 @@ public:
         return true;
     }
 
-    void Delete(Data identify) {
+    void Delete(const Data &identify) {
         auto itr = _key_map.find(identify);
         if (_key_map.end() == itr)
             return;
@@ -57,7 +59,7 @@ public:
         _key_map.erase(itr);
     }
 
-    bool Update(Key key, Data identify) {
+    bool Update(const Key &key, const Data &identify) {
         auto finditr = _key_map.find(identify);
 
         if (finditr == _key_map.end())
@@ -72,11 +74,18 @@ public:
         return _rank_list.Lenth();
     }
 
-    unsigned long GetRank(Data identify) {
+    unsigned long GetRank(const Data &identify) {
         auto itr = _key_map.find(identify);
         if (itr == _key_map.end())
             return 0;
         return _rank_list.GetRank(itr->second, itr->first);
+    }
+
+    iterator GetByData(const Data &identify) {
+        auto itr = _key_map.find(identify);
+        if (itr == _key_map.end())
+            return end();
+        return _rank_list.Search(itr->second, itr->first);
     }
 
     iterator GetTopRank(const unsigned long rank) {
