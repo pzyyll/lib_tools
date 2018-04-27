@@ -94,13 +94,27 @@ int main() {
     {
         std::cout << itr->first.val << " : ";
         std::cout << itr->second << endl;
-        itr->second += 1;
     }
 
     for (auto itr : sl_ki)
     {
         cout << itr.second << endl;
     }
+
+    cout << "--- clear ----" << endl;
+    sl_ki.Clear();
+
+    cout << sl_ki.Lenth() << std::endl;
+    cout << "--- clear aft insert ---" << endl;
+    sl_ki.Insert(k1, k1.id);
+
+    for (auto itr = sl_ki.begin(); itr != sl_ki.end(); ++itr)
+    {
+        std::cout << itr->first.val << " : ";
+        std::cout << itr->second << endl;
+    }
+
+    cout << "lenth " << sl_ki.Lenth() << endl;
 
     std::cout << "Hello, World!" << std::endl;
     return 0;

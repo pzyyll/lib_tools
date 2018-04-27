@@ -359,6 +359,11 @@ public:
         return Delete(itr->first, itr->second);
     }
 
+    void Clear() {
+        Deinit();
+        InitHead();
+    }
+
     unsigned long Lenth() { return lenth_; }
 
     iterator begin() { return iterator(head_->level[0].forward, tail_->level[0].forward); }
@@ -402,8 +407,8 @@ private:
         sl_node_pointer pNode = alloc_.allocate(1);
         alloc_.construct(pNode, lvl, std::make_pair(score, data));
 
-        //static int make = 0;
-        //std::cout << "Make:" << ++make << std::endl;
+        static int make = 0;
+        std::cout << "Make:" << ++make << std::endl;
         return pNode;
     }
 
@@ -412,8 +417,8 @@ private:
         alloc_.deallocate(node, 1);
         node = NULL;
 
-        //static int free = 0;
-        //std::cout << "Free:" << ++free << std::endl;
+        static int free = 0;
+        std::cout << "Free:" << ++free << std::endl;
         return 0;
     }
 
@@ -425,6 +430,10 @@ private:
             FreeNode(itr);
             itr = next;
         }
+        head_ = NULL;
+        tail_ = NULL;
+        lenth_ = 0;
+        level_ = 1;
     }
 
     bool KeyEqual(const key_type &key1, const key_type &key2) {

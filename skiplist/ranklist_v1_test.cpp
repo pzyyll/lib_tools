@@ -7,6 +7,7 @@
 #include "ranklist_v1.h"
 #include <functional>
 #include <map>
+#include <memory>
 
 using namespace std;
 
@@ -125,6 +126,12 @@ int main() {
     auto iifitr = iiranklist.GetByData(2);
     std::cout << iifitr->first << "|" << iifitr->second << std::endl;
     std::map<int, int> iimap;
+
+    shared_ptr<int> ipointer = make_shared<int>(12);
+
+    *ipointer = 2;
+
+    cout << *ipointer << endl;
 
     return 0;
 }
