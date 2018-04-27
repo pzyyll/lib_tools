@@ -88,6 +88,13 @@ int main() {
     std::cout << "----------------" << std::endl;
 
     SkipList<Key, int> sl_ki;
+    for (auto itr = sl_ki.begin(); itr != sl_ki.end(); ++itr)
+    {
+        std::cout << itr->first.val << " : ";
+        std::cout << itr->second << endl;
+    }
+    
+    
     sl_ki.Insert(k1, k1.id);
     sl_ki.Insert(k2, k2.id);
     for (auto itr = sl_ki.begin(); itr != sl_ki.end(); ++itr)

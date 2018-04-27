@@ -94,6 +94,13 @@ public:
         return _rank_list.FirstInRangeByRank(Range(rank, rank));
     }
 
+    bool Empty() { return _rank_list.Empty(); }
+
+    void Clear() {
+        _rank_list.Clear();
+        _key_map.clear();
+    }
+
     iterator begin() { return _rank_list.begin(); }
     iterator end() { return _rank_list.end(); }
     iterator last() { return _rank_list.last(); }

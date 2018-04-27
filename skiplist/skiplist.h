@@ -366,9 +366,11 @@ public:
 
     unsigned long Lenth() { return lenth_; }
 
-    iterator begin() { return iterator(head_->level[0].forward, tail_->level[0].forward); }
-    iterator end() { return iterator(tail_->level[0].forward, tail_->level[0].forward); }
-    iterator last() { return iterator(tail_, tail_->level[0].forward); }
+    bool Empty() { return Lenth() == 0; }
+
+    iterator begin() { return iterator(head_->level[0].forward, nullptr); }
+    iterator end() { return iterator(nullptr, nullptr); }
+    iterator last() { return iterator(tail_, nullptr); }
 
 private:
     void InitHead() {
@@ -407,8 +409,10 @@ private:
         sl_node_pointer pNode = alloc_.allocate(1);
         alloc_.construct(pNode, lvl, std::make_pair(score, data));
 
+#ifdef CHECK_MALLOC
         static int make = 0;
         std::cout << "Make:" << ++make << std::endl;
+#endif
         return pNode;
     }
 
@@ -417,8 +421,10 @@ private:
         alloc_.deallocate(node, 1);
         node = NULL;
 
+#ifdef CHECK_MALLOC
         static int free = 0;
         std::cout << "Free:" << ++free << std::endl;
+#endif
         return 0;
     }
 

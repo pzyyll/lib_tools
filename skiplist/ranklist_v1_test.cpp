@@ -133,5 +133,30 @@ int main() {
 
     cout << *ipointer << endl;
 
+
+    cout << "--- clear ---" << endl;
+    rank_list.Clear();
+    cout << "clear aft size : " << rank_list.GetSize() << endl;
+    cout << "is empty : " << rank_list.Empty() << endl;
+
+    for (auto itr : rank_list)
+    {
+        std::cout << "id : " << itr.second << std::endl;
+        std::cout << "key_info : ";
+        itr.first.Detail();
+    }
+
+    rank_list.Insert(Key(15, 7), 7);
+    cout << "clear aft size : " << rank_list.GetSize() << endl;
+    cout << "is empty : " << rank_list.Empty() << endl;
+
+    for (auto itr : rank_list)
+    {
+        std::cout << "id : " << itr.second << std::endl;
+        std::cout << "key_info : ";
+        itr.first.Detail();
+    }
+
+
     return 0;
 }
