@@ -68,6 +68,8 @@ public:
         _rank_list.Delete(finditr->second, finditr->first);
         _rank_list.Insert(key, identify);
         finditr->second = key;
+
+        return true;
     }
 
     unsigned long GetSize() {
