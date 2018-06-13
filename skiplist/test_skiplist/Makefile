@@ -8,16 +8,16 @@
 
 TARGET     = test
 CC         = g++
-CPPFLAGS   = -std=c++11 -Wall -g3 -fPIC
+CPPFLAGS   = -std=gnu++11 -Wall -g3 -fPIC
 LDFLAGS    = -lgtest_main -lgtest -lpthread #-lboost_system -lboost_thread -lboost_serialization
-LDPATH     = $(ROOT_PATH)/googletest/cmake-build-debug/usr/lib64/
+LDPATH     = $(ROOT_PATH)/googletest/cmake-build-debug/usr/lib/
 SRC_SUFFIX = .cpp
 SRC_DIRS   = . #./common/ext/test/
 INC_DIRS   = . $(ROOT_PATH)/googletest/cmake-build-debug/usr/include/ #./common/ext/test/
 
 LIB_PATH   := $(addprefix -L,$(LDPATH))
 INCFLAGS   := $(addprefix -I,$(INC_DIRS))
-COMPILE.cc := $(CC) $(CPPFLAGS) $(LIB_PATH) $(INCFLAGS)
+COMPILE.cc := $(CC) $(CPPFLAGS) $(INCFLAGS) $(LIB_PATH)
 
 ABS_SRCDIRS := $(abspath $(SRC_DIRS))
 ABS_INCDIRS := $(abspath $(INC_DIRS))
