@@ -13,7 +13,7 @@ LDFLAGS    = -lgtest_main -lgtest -lpthread #-lboost_system -lboost_thread -lboo
 LDPATH     = $(ROOT_PATH)/googletest/cmake-build-debug/usr/lib/
 SRC_SUFFIX = .cpp
 SRC_DIRS   = . #./common/ext/test/
-INC_DIRS   = . $(ROOT_PATH)/googletest/cmake-build-debug/usr/include/ #./common/ext/test/
+INC_DIRS   = . $(ROOT_PATH)/googletest/cmake-build-debug/usr/include/ $(ROOT_PATH)/skiplist/ #./common/ext/test/
 
 LIB_PATH   := $(addprefix -L,$(LDPATH))
 INCFLAGS   := $(addprefix -I,$(INC_DIRS))
