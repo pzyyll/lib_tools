@@ -227,13 +227,13 @@ public:
             return end();
 
         //tail_->data.key_val.first < max
-        if (key_cmp_(tail_->data.first, max))
+        if (key_cmp_(tail_->data.first, min))
             return end();
 
         sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
             while (x->level[i].forward &&
-                    key_cmp_(x->level[i].forward->data.key_val.first, min))
+                    key_cmp_(x->level[i].forward->data.first, min))
                 x = x->level[i].forward;
         }
         x = x->level[0].forward;
@@ -248,7 +248,7 @@ public:
 
     iterator LastInRangeByScore(const key_type &min, const key_type &max) {
         //max < min
-        if (key_cmp_(max < min))
+        if (key_cmp_(max, min))
             return end();
 
         //tail_->data.key_val.first < min
@@ -261,7 +261,7 @@ public:
         sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
             while (x->level[i].forward &&
-                    !key_cmp_(max, x->level[i].forward->data.key_val.first)) {
+                    !key_cmp_(max, x->level[i].forward->data.first)) {
                 x = x->level[i].forward;
             }
         }

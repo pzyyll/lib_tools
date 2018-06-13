@@ -9,6 +9,7 @@
 #include <random>
 #include <vector>
 #include <set>
+#include <cassert>
 
 namespace lib_tools {
 
@@ -56,65 +57,23 @@ public:
 	}
 
 	//@brief 根据权重不放回随机抽样
-	//@param vals 提供的抽样数据
+	//@param population 提供的抽样数据
 	//@param weights 对应抽样数据权重
 	//@param count 从提供的抽样数据中抽取的个数
 	//@return 抽样结果
-	template <typename T>
-	static std::vector<T> RandomSample(
-		const std::vector<T> &vals,
+    template <typename Set>
+	static std::vector<typename Set::value_type> RandomSample(
+		const Set &population,
 		const std::vector<double> &weights,
 		const unsigned count
 	) {
-		std::vector<T> results;
+        assert(population.size() == weights.size());
+        assert(population.size() > 0);
+        
+		std::vector<typename Set::value_type> results;
 
-		if (vals.size() <= 0) {
-			return results;
-		}
-
-		std::vector<T> tmp_vals = vals;
-		std::vector<double> tmp_ws = weights;
-
-		while (tmp_ws.size() < vals.size())
-			tmp_ws.push_back(0);
-
-		if (vals.size() < tmp_ws.size())
-			tmp_ws.resize(vals.size());
-
-        std::set<unsigned> check;
-		for (unsigned i = tmp_ws.size() - count + 1; i <= tmp_ws.size();++i) {
-			unsigned idx = DiscreteDist(tmp_ws.begin(), tmp_ws.begin() + i);
-			if (check.find(idx) != check.end()) {
-                results.push_back(tmp_vals[i - 1]);
-            } else {
-                results.push_back(tmp_vals[idx]);
-                check.insert(idx);
-            }
-		}
-
-		return results;
-	}
-
-    template <typename T>
-	static std::vector<T> RandomSample2(
-		const std::vector<T> &vals,
-		const std::vector<double> &weights,
-		const unsigned count
-	) {
-		std::vector<T> results;
-
-		if (vals.size() <= 0) {
-			return results;
-		}
-
-		std::vector<T> tmp_vals = vals;
-		std::vector<double> tmp_ws = weights;
-
-		while (tmp_ws.size() < vals.size())
-			tmp_ws.push_back(0);
-
-		if (vals.size() < tmp_ws.size())
-			tmp_ws.resize(vals.size());
+		std::vector<typename Set::value_type> tmp_vals(population.begin(), population.end());
+		std::vector<double> tmp_ws(weights.begin(), weights.end());
 
 		for (unsigned i = 0;
 			i < count &&

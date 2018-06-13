@@ -41,7 +41,7 @@ struct KeyLess {
     }
 };
 
-int main() {
+void TestFunc() {
     lib_tools::RankList<Key, int, KeyLess> rank_list(30);
 
     //Insert func
@@ -156,7 +156,70 @@ int main() {
         std::cout << "key_info : ";
         itr.first.Detail();
     }
+}
 
+namespace test_range {
+
+
+struct Key {
+
+    Key(const int sc = 0, const int t = 0) : score(sc), tm(t) {  }
+    ~Key() = default;
+
+    bool operator<(const Key &k) const {
+        if (score != k.score)
+            return score < k.score;
+        return tm < k.tm;
+    }
+
+    int score;
+    int tm;
+};
+
+typedef lib_tools::RankList<Key, int> RankType;
+RankType kRanklist;
+
+void Print(RankType &ranklist) {
+    for (auto itr : ranklist) {
+        cout << "Key: " << itr.first.score << "|" << itr.first.tm <<
+            ", id: " << itr.second << endl;
+    }
+}
+
+void Print(RankType::iterator b, RankType::iterator e) {
+    while (b != e) {
+        cout << "Key: " << (*b).first.score << "|" << (*b).first.tm <<
+                ", id: " << (*b).second << endl;
+        ++b;
+    }
+    cout << "Key: " << (*b).first.score << "|" << (*b).first.tm <<
+        ", id: " << (*b).second << endl;
+}
+
+void Test() {
+    kRanklist.Insert(Key(1, 0), 1);
+    kRanklist.Insert(Key(10, 0), 2);
+    kRanklist.Insert(Key(2, 0), 3);
+    kRanklist.Insert(Key(5, 0), 4);
+    kRanklist.Insert(Key(2, 0), 5);
+
+    Print(kRanklist);
+
+    auto bitr = kRanklist.GetFirstInRangeByScore(Key(2, 0), Key(12, 0));
+    auto eitr = kRanklist.GetLastInRangeByScore(Key(2, 0), Key(12, 0));
+
+    cout << "Test" << endl;
+
+    Print(bitr, eitr);
+
+    cout << "End Test." << endl;
+}
+
+}
+
+int main() {
+    //TestFunc();
+    test_range::Test();
 
     return 0;
 }

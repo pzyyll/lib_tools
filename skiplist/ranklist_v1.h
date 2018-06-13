@@ -96,6 +96,14 @@ public:
         return _rank_list.FirstInRangeByRank(Range(rank, rank));
     }
 
+    iterator GetFirstInRangeByScore(const Key &min, const Key &max) {
+        return _rank_list.FirstInRangeByScore(min, max);
+    }
+
+    iterator GetLastInRangeByScore(const Key &min, const Key &max) {
+        return _rank_list.LastInRangeByScore(min, max);
+    }
+
     bool Empty() { return _rank_list.Empty(); }
 
     void Clear() {
