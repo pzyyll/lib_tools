@@ -3,7 +3,6 @@
 ## Cmake
 
 ```
-$ source ./auto_gen.sh
 $ mkdir cmake-build-debug && cd cmake-build-debug
 $ cmake ../ && make
 
@@ -12,7 +11,7 @@ $ cmake ../ && make
 ## Makefile
 
 ```
-$ source ./auto_gen.sh
+$ ./deps
 $ make
 ```
 

@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.6)
 project(skiplist_test)
 
+add_custom_target(
+    gen_deps ALL
+    COMMAND ./deps
+    DEPENDS deps
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+
 set(ROOT_PATH $ENV{ROOT_PATH})
 set(GTEST_LIBDIR ${ROOT_PATH}/googletest/cmake-build-debug/usr/lib/)
 set(GTEST_INCDIR ${ROOT_PATH}/googletest/cmake-build-debug/usr/include/)

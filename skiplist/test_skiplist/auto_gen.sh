@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 # source this-script
 
-PHY_PWD="$(pwd -P)"
-export ROOT_PATH="${PHY_PWD%/*/*}"
+SCRIPT_PATH=$(cd $(dirname $(readlink -f "${BASH_SOURCE[0]}")) && pwd)
+export ROOT_PATH="${SCRIPT_PATH%/*/*}"
 
 cd ${ROOT_PATH}/googletest
 mkdir -p cmake-build-debug && cd cmake-build-debug
