@@ -164,6 +164,7 @@ public:
         return end();
     }
 
+    //@brief when mutil score is same, search the first iteratro.
     iterator SearchFirst(key_type score) {
         sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
@@ -226,7 +227,7 @@ public:
         if (key_cmp_(max, min))
             return end();
 
-        //tail_->data.key_val.first < max
+        //tail_->data.key_val.first < min
         if (key_cmp_(tail_->data.first, min))
             return end();
 
@@ -254,7 +255,9 @@ public:
         //tail_->data.key_val.first < min
         if (key_cmp_(tail_->data.first, min)) {
             return end();
-        } else if (!key_cmp_(max, tail_->data.first)) {
+        }
+
+        if (!key_cmp_(max, tail_->data.first)) {
             return iterator(tail_, tail_->level[0].forward);
         }
 

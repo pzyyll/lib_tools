@@ -9,4 +9,4 @@ mkdir -p cmake-build-debug && cd cmake-build-debug
 
 cmake ../ -DCMAKE_INSTALL_PREFIX=./usr/ -DCMAKE_INSTALL_LIBDIR=lib && make && make install
 
-cd ${PHY_PWD}
+cd ${SCRIPT_PATH}
