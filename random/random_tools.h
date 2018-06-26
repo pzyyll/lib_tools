@@ -97,7 +97,7 @@ public:
 	}
 
 private:
-	template <typename T> 
+	template <typename T>
 	static void Use(const T &use) { (void)(use); }
 
 	static std::mt19937 &GetEngine() {
