@@ -197,6 +197,9 @@ public:
     }
 
     iterator FirstInRangeByRank(const Range &range) {
+        if (Lenth() == 0)
+            return end();
+        
         unsigned long min = range.min;
         unsigned long max = range.max;
         if (max < min) {
@@ -223,6 +226,9 @@ public:
     }
 
     iterator FirstInRangeByScore(const key_type &min, const key_type &max) {
+        if (Lenth() == 0)
+            return end();
+        
         //max < min
         if (key_cmp_(max, min))
             return end();
@@ -248,6 +254,9 @@ public:
     }
 
     iterator LastInRangeByScore(const key_type &min, const key_type &max) {
+        if (Lenth() == 0)
+            return end();
+        
         //max < min
         if (key_cmp_(max, min))
             return end();
