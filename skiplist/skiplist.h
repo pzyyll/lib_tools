@@ -201,6 +201,8 @@ public:
     };
 
     const_iterator Search(key_type score, const data_type &val) const {
+        if (Empty()) return end();
+
         sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
             while (NULL != x->level[i].forward &&
@@ -225,6 +227,8 @@ public:
 
     //@brief when mutil score is same, search the first iteratro.
     const_iterator SearchFirst(key_type score) const {
+        if (Empty()) return end();
+
         sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
             while (NULL != x->level[i].forward &&
@@ -245,6 +249,8 @@ public:
     }
 
     unsigned long GetRank(key_type score, const data_type &val) const {
+        if (Empty()) return 0;
+
         unsigned long rank = 0;
         sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
@@ -261,6 +267,8 @@ public:
     }
 
     const_iterator FirstInRangeByRank(const Range &range) const {
+        if (Empty()) return end();
+
         unsigned long min = range.min;
         unsigned long max = range.max;
         if (max < min) {
@@ -292,6 +300,8 @@ public:
     }
 
     const_iterator FirstInRangeByScore(const key_type &min, const key_type &max) const {
+        if (Empty()) return end();
+
         //max < min
         if (key_cmp_(max, min))
             return end();
@@ -315,7 +325,7 @@ public:
 
         return iterator(x, tail_->level[0].forward);
     }
-    
+
     iterator FirstInRangeByScore(const key_type &min, const key_type &max) {
         const_iterator itr =
                 static_cast<const self_type&>(*this).FirstInRangeByScore(min, max);
@@ -323,6 +333,8 @@ public:
     }
 
     const_iterator LastInRangeByScore(const key_type &min, const key_type &max) const {
+        if (Empty()) return end();
+
         //max < min
         if (key_cmp_(max, min))
             return end();
