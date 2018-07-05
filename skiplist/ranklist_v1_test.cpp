@@ -216,6 +216,9 @@ void Test() {
     cout << val.first.score << endl;
     cout << val.second << endl;
 
+    auto itr = kRanklist.GetByData(2);
+    cout << itr->second << endl;
+
     cout << "End Test." << endl;
 }
 

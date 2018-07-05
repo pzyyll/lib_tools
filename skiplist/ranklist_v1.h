@@ -30,7 +30,9 @@ class RankList {
 public:
     typedef SkipList<Key, Data, KeyCompare, ValCompare> SkipListType;
     typedef typename SkipListType::iterator iterator;
+    typedef typename SkipListType::const_iterator const_iterator;
     typedef typename SkipListType::val_type val_type;
+    typedef RankList<Key, Data, KeyCompare, ValCompare> self_type;
 
     explicit RankList(const unsigned max_size = UINT32_MAX - 1) : _max_size(max_size) { }
 
@@ -73,48 +75,70 @@ public:
         return true;
     }
 
-    unsigned long GetSize() {
-        return _rank_list.Lenth();
-    }
-
-    unsigned long GetRank(const Data &identify) {
+    unsigned long GetRank(const Data &identify) const {
         auto itr = _key_map.find(identify);
         if (itr == _key_map.end())
             return 0;
         return _rank_list.GetRank(itr->second, itr->first);
     }
 
-    iterator GetByData(const Data &identify) {
+    const_iterator GetByData(const Data &identify) const {
         auto itr = _key_map.find(identify);
         if (itr == _key_map.end())
             return end();
         return _rank_list.Search(itr->second, itr->first);
     }
 
-    iterator GetTopRank(const unsigned long rank) {
+    iterator GetByData(const Data &identify) {
+        const_iterator itr = static_cast<const self_type&>(*this).GetByData(identify);
+        return itr.remove_const();
+    }
+
+    const_iterator GetTopRank(const unsigned long rank) const {
         if (rank > _rank_list.Lenth())
             return _rank_list.end();
         return _rank_list.FirstInRangeByRank(Range(rank, rank));
+    }
+
+    iterator GetTopRank(const unsigned long rank) {
+        const_iterator itr = static_cast<const self_type&>(*this).GetTopRank(rank);
+        return itr.remove_const();
+    }
+
+    const_iterator GetFirstInRangeByScore(const Key &min, const Key &max) const {
+        return _rank_list.FirstInRangeByScore(min, max);
     }
 
     iterator GetFirstInRangeByScore(const Key &min, const Key &max) {
         return _rank_list.FirstInRangeByScore(min, max);
     }
 
-    iterator GetLastInRangeByScore(const Key &min, const Key &max) {
+    const_iterator GetLastInRangeByScore(const Key &min, const Key &max) const {
         return _rank_list.LastInRangeByScore(min, max);
     }
 
-    bool Empty() { return _rank_list.Empty(); }
+    iterator GetLastInRangeByScore(const Key &min, const Key &max) {
+        return _rank_list.LastInRangeByScore(min, max);
+    }
 
     void Clear() {
         _rank_list.Clear();
         _key_map.clear();
     }
 
+    unsigned long GetSize() const {
+        return _rank_list.Lenth();
+    }
+
+    bool Empty() const { return _rank_list.Empty(); }
+
     iterator begin() { return _rank_list.begin(); }
     iterator end() { return _rank_list.end(); }
     iterator last() { return _rank_list.last(); }
+
+    const_iterator begin() const { return _rank_list.begin(); }
+    const_iterator end() const { return _rank_list.end(); }
+    const_iterator last() const { return _rank_list.last(); }
 
 private:
     SkipListType _rank_list;

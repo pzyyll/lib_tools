@@ -135,6 +135,8 @@ public:
     reference operator*() { return pos->data; }
     pointer operator->() { return &(operator*()); }
 
+    iterator remove_const() { return iterator(pos, end); }
+
     self_type &operator++() {
         assert(pos != end);
         pos = pos->level[0].forward;
@@ -198,7 +200,7 @@ public:
         Deinit();
     };
 
-    iterator Search(key_type score, const data_type &val) {
+    const_iterator Search(key_type score, const data_type &val) const {
         sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
             while (NULL != x->level[i].forward &&
@@ -216,8 +218,13 @@ public:
         return end();
     }
 
+    iterator Search(key_type score, const data_type &val) {
+        const_iterator itr = static_cast<const self_type&>(*this).Search(score, val);
+        return itr.remove_const();
+    }
+
     //@brief when mutil score is same, search the first iteratro.
-    iterator SearchFirst(key_type score) {
+    const_iterator SearchFirst(key_type score) const {
         sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
             while (NULL != x->level[i].forward &&
@@ -232,7 +239,12 @@ public:
         return end();
     }
 
-    unsigned long GetRank(key_type score, const data_type &val) {
+    iterator SearchFirst(key_type score) {
+        const_iterator itr = static_cast<const self_type&>(*this).SearchFirst(score);
+        return itr.remove_const();
+    }
+
+    unsigned long GetRank(key_type score, const data_type &val) const {
         unsigned long rank = 0;
         sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
@@ -248,7 +260,7 @@ public:
         return 0;
     }
 
-    iterator FirstInRangeByRank(const Range &range) {
+    const_iterator FirstInRangeByRank(const Range &range) const {
         unsigned long min = range.min;
         unsigned long max = range.max;
         if (max < min) {
@@ -274,7 +286,12 @@ public:
         return iterator(x, tail_->level[0].forward);
     }
 
-    iterator FirstInRangeByScore(const key_type &min, const key_type &max) {
+    iterator FirstInRangeByRank(const Range &range) {
+        const_iterator itr = static_cast<const self_type&>(*this).FirstInRangeByRank(range);
+        return itr.remove_const();
+    }
+
+    const_iterator FirstInRangeByScore(const key_type &min, const key_type &max) const {
         //max < min
         if (key_cmp_(max, min))
             return end();
@@ -299,7 +316,13 @@ public:
         return iterator(x, tail_->level[0].forward);
     }
 
-    iterator LastInRangeByScore(const key_type &min, const key_type &max) {
+    iterator FirstInRangeByScore(const key_type &min, const key_type &max) {
+        const_iterator itr =
+                static_cast<const self_type&>(*this).FirstInRangeByScore(min, max);
+        return itr.remove_const();
+    }
+
+    const_iterator LastInRangeByScore(const key_type &min, const key_type &max) const {
         //max < min
         if (key_cmp_(max, min))
             return end();
@@ -329,6 +352,12 @@ public:
         }
 
         return iterator(x, tail_->level[0].forward);
+    }
+
+    iterator LastInRangeByScore(const key_type &min, const key_type &max) {
+        const_iterator itr =
+                static_cast<const self_type&>(*this).LastInRangeByScore(min, max);
+        return itr.remove_const();
     }
 
     int Insert(key_type score, const data_type &val) {
@@ -501,7 +530,7 @@ private:
         level_ = 1;
     }
 
-    bool KeyEqual(const key_type &key1, const key_type &key2) {
+    bool KeyEqual(const key_type &key1, const key_type &key2) const {
         return (!key_cmp_(key1, key2) && !key_cmp_(key2, key1));
     }
 

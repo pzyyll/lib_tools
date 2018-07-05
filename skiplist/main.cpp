@@ -11,12 +11,13 @@ using namespace std;
 typedef shared_ptr<int> IntPtr;
 
 struct LessCmp {
-    bool operator()(const IntPtr &a, const IntPtr &b) {
+    bool operator()(const IntPtr &a, const IntPtr &b) const {
         return *a > *b;
     }
 };
 
 void TestConst() {
+
     typedef lib_tools::SkipList<IntPtr, int, LessCmp> RankType;
     RankType skiplist;
 
@@ -35,8 +36,30 @@ void TestConst() {
     cout << csk.begin()->second << endl;
 }
 
+class Test {
+public:
+    void Init() {
+        skiplist.Insert(make_shared<int>(3), 3);
+        skiplist.Insert(make_shared<int>(2), 2);
+    }
+    void P() const {
+        for (auto itr : skiplist) {
+            cout << itr.second << endl;
+        }
+    }
+private:
+    typedef lib_tools::SkipList<IntPtr, int, LessCmp> RankType;
+    RankType skiplist;
+};
+
 int main() {
-    TestConst();
+    //TestConst();
+
+    Test test;
+    test.Init();
+    const Test &const_test = test;
+
+    const_test.P();
 
     std::cout << "Hello, World!" << std::endl;
     return 0;
