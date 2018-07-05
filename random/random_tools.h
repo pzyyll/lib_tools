@@ -9,6 +9,8 @@
 #include <random>
 #include <vector>
 #include <set>
+#include <thread>
+#include <mutex>
 #include <cassert>
 
 namespace lib_tools {
@@ -17,87 +19,105 @@ namespace lib_tools {
 class Random
 {
 public:
-    template <typename T = int>
-    static T RandInt(const T min, const T max) {
-        std::uniform_int_distribution<T> dist(min, max);
-        return dist(engine);
-    }
+	template <typename T = int>
+	static T RandInt(const T min, const T max) {
+		std::uniform_int_distribution<T> dist(min, max);
+        std::unique_lock<std::mutex> lock(GetMutex());
+		return dist(GetEngine());
+	}
 
-    template <typename T>
-    static void Shuffle(T begin, T end) {
-        std::shuffle(begin, end);
-    }
+	template <typename T>
+	static void Shuffle(T begin, T end) {
+		std::shuffle(begin, end);
+	}
 
-    static bool BernoulliDist(double p) {
-        std::bernoulli_distribution dist(p);
-        return dist(engine);
-    }
+	static bool BernoulliDist(double p) {
+		std::bernoulli_distribution dist(p);
+        std::unique_lock<std::mutex> lock(GetMutex());
+		return dist(GetEngine());
+	}
 
-    template <typename InputIt>
-    static unsigned DiscreteDist(InputIt begin, InputIt end) {
-        std::discrete_distribution<unsigned> dist(begin, end);
-        return dist(engine);
-    }
+	template <typename InputIt>
+	static unsigned DiscreteDist(InputIt begin, InputIt end) {
+		std::discrete_distribution<unsigned> dist(begin, end);
+        std::unique_lock<std::mutex> lock(GetMutex());
+		return dist(GetEngine());
+	}
 
-    template <typename T>
-    static T DiscreteDist(
-        const std::vector<T> &vals,
-        const std::vector<double> &weights
-    ) {
-        std::vector<double> tmp_ws = weights;
-        while (tmp_ws.size() < vals.size())
-            tmp_ws.push_back(0);
+	template <typename T>
+	static T DiscreteDist(
+		const std::vector<T> &vals,
+		const std::vector<double> &weights
+	) {
+		std::vector<double> tmp_ws = weights;
+		while (tmp_ws.size() < vals.size())
+			tmp_ws.push_back(0);
 
-        if (vals.size() < tmp_ws.size())
-            tmp_ws.resize(vals.size());
+		if (vals.size() < tmp_ws.size())
+			tmp_ws.resize(vals.size());
 
-        unsigned idx = DiscreteDist(tmp_ws.begin(), tmp_ws.end());
+		unsigned idx = DiscreteDist(tmp_ws.begin(), tmp_ws.end());
 
-        return vals[idx];
-    }
+		return vals[idx];
+	}
 
-    //@brief æ ¹æ®æƒé‡ä¸æ”¾å›žéšæœºæŠ½æ ·
-    //@param population æä¾›çš„æŠ½æ ·æ•°æ®
-    //@param weights å¯¹åº”æŠ½æ ·æ•°æ®æƒé‡
-    //@param count ä»Žæä¾›çš„æŠ½æ ·æ•°æ®ä¸­æŠ½å–çš„ä¸ªæ•°
-    //@return æŠ½æ ·ç»“æžœ
-    template <typename Set>
-    static std::vector<typename Set::value_type> RandomSample(
-        const Set &population,
-        const std::vector<double> &weights,
-        const unsigned count
-    ) {
-        assert(population.size() == weights.size());
-        assert(population.size() > 0);
-        
-        std::vector<typename Set::value_type> results;
+	//@brief ¸ù¾ÝÈ¨ÖØ²»·Å»ØËæ»ú³éÑù
+	//@param population Ìá¹©µÄ³éÑùÊý¾Ý
+	//@param weights ¶ÔÓ¦³éÑùÊý¾ÝÈ¨ÖØ
+	//@param count ´ÓÌá¹©µÄ³éÑùÊý¾ÝÖÐ³éÈ¡µÄ¸öÊý
+	//@return ³éÑù½á¹û
+	template <typename Set>
+	static std::vector<typename Set::value_type> RandomSample(
+		const Set &population,
+		const std::vector<double> &weights,
+		const unsigned count
+	) {
+		assert(population.size() == weights.size());
+		assert(population.size() > 0);
 
-        std::vector<typename Set::value_type> tmp_vals(population.begin(), population.end());
-        std::vector<double> tmp_ws(weights.begin(), weights.end());
+		std::vector<typename Set::value_type> results;
 
-        for (unsigned i = 0;
-            i < count &&
-            tmp_vals.size() > 0 &&
-            tmp_ws.size() > 0;
-            ++i) {
+		std::vector<typename Set::value_type> tmp_vals(population.begin(), population.end());
+		std::vector<double> tmp_ws(weights.begin(), weights.end());
 
-            unsigned idx = DiscreteDist(tmp_ws.begin(), tmp_ws.end());
-            unsigned res_val = tmp_vals[idx];
-            results.push_back(res_val);
-            tmp_vals.erase(tmp_vals.begin() + idx);
-            tmp_ws.erase(tmp_ws.begin() + idx);
-        }
+		for (unsigned i = 0;
+			i < count &&
+			tmp_vals.size() > 0 &&
+			tmp_ws.size() > 0;
+			++i) {
 
-        return results;
-    }
+			unsigned idx = DiscreteDist(tmp_ws.begin(), tmp_ws.end());
+			unsigned res_val = tmp_vals[idx];
+			results.push_back(res_val);
+			tmp_vals.erase(tmp_vals.begin() + idx);
+			tmp_ws.erase(tmp_ws.begin() + idx);
+		}
 
-    static std::mt19937 engine;
+		return results;
+	}
+
+private:
+	template <typename T>
+	static void Use(const T &use) { (void)(use); }
+
+	static std::mt19937 &GetEngine() {
+		static std::mt19937 engine(static_cast<unsigned>(time(NULL)));
+		Use(engine);
+		return engine;
+	}
+
+	static std::mutex &GetMutex() {
+		static std::mutex mutex;
+		Use(mutex);
+		return mutex;
+	}
+
+	static std::mt19937 &_engine;
+	static std::mutex &_mutex;
 };
 
-std::mt19937 Random::engine(static_cast<unsigned>(time(NULL)));
 
 
 } //namespace lib_tools
 
 #endif //LIB_TOOLS_RANDOM_TOOLS_H
-

@@ -30,9 +30,11 @@
 *.exe
 *.out
 *.app
+*.stackdump
 
 **/cmake-build-debug/*
 **/.idea/*
 **/temp/
 **/tags
 **/.vscode
+

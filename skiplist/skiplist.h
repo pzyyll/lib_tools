@@ -315,7 +315,7 @@ public:
 
         return iterator(x, tail_->level[0].forward);
     }
-
+    
     iterator FirstInRangeByScore(const key_type &min, const key_type &max) {
         const_iterator itr =
                 static_cast<const self_type&>(*this).FirstInRangeByScore(min, max);
