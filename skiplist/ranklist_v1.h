@@ -30,6 +30,7 @@ class RankList {
 public:
     typedef SkipList<Key, Data, KeyCompare, ValCompare> SkipListType;
     typedef typename SkipListType::iterator iterator;
+    typedef typename SkipListType::val_type val_type;
 
     explicit RankList(const unsigned max_size = UINT32_MAX - 1) : _max_size(max_size) { }
 

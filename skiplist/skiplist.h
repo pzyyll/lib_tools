@@ -70,7 +70,7 @@ struct SkipListNode {
 };
 
 template <typename Tp>
-class SkipListIterator {
+struct SkipListIterator {
 public:
     typedef Tp val_type;
     typedef Tp* pointer;
@@ -81,6 +81,55 @@ public:
     SkipListIterator()
             : pos(nullptr), end(nullptr) { }
     SkipListIterator(sl_node_pointer it_, sl_node_pointer end_)
+            : pos(it_), end(end_) { }
+
+    reference operator*() { return pos->data; }
+    pointer operator->() { return &(operator*()); }
+
+    self_type &operator++() {
+        assert(pos != end);
+        pos = pos->level[0].forward;
+        return *this;
+    }
+    const self_type operator++(int) {
+        self_type tmp(*this);
+        ++*this;
+        return tmp;
+    }
+    self_type &operator--() {
+        assert(pos != end);
+        pos = pos->backward;
+        return *this;
+    }
+    const self_type operator--(int) {
+        self_type tmp(*this);
+        --*this;
+        return tmp;
+    }
+
+    bool operator==(const self_type &it) const { return pos == it.pos; }
+    bool operator!=(const self_type &it) const { return pos != it.pos; }
+
+    // The actual data
+    sl_node_pointer pos, end;
+};
+
+
+template <typename Tp>
+struct SkipListConstIterator {
+public:
+    typedef Tp val_type;
+    typedef const Tp* pointer;
+    typedef const Tp& reference;
+    typedef SkipListIterator<Tp> iterator;
+    typedef SkipListConstIterator<Tp> self_type;
+    typedef SkipListNode<val_type>* sl_node_pointer;
+
+    SkipListConstIterator()
+            : pos(nullptr), end(nullptr) { }
+    SkipListConstIterator(const iterator &it)
+            : pos(it.pos), end(it.end) { }
+    SkipListConstIterator(sl_node_pointer it_, sl_node_pointer end_)
             : pos(it_), end(end_) { }
 
     reference operator*() { return pos->data; }
@@ -130,9 +179,12 @@ public:
     typedef ValCmp val_cmp_type;
     typedef typename Alloc::template rebind<sl_node>::other node_alloc;
     typedef SkipList<Key, Tp, KeyCmp, ValCmp, Alloc> self_type;
-    typedef self_type& reference;
-    typedef self_type* pointer;
+    typedef val_type& reference;
+    typedef val_type* pointer;
+    typedef const val_type& const_referrence;
+    typedef const val_type* const_pointer;
     typedef SkipListIterator<val_type> iterator;
+    typedef SkipListConstIterator<val_type> const_iterator;
 
     SkipList()
             : head_(NULL),
@@ -367,13 +419,17 @@ public:
         InitHead();
     }
 
-    unsigned long Lenth() { return lenth_; }
+    unsigned long Lenth() const { return lenth_; }
 
-    bool Empty() { return Lenth() == 0; }
+    bool Empty() const { return Lenth() == 0; }
 
     iterator begin() { return iterator(head_->level[0].forward, nullptr); }
     iterator end() { return iterator(nullptr, nullptr); }
     iterator last() { return iterator(tail_, nullptr); }
+
+    const_iterator begin() const { return const_iterator(head_->level[0].forward, nullptr); }
+    const_iterator end() const { return const_iterator(nullptr, nullptr); }
+    const_iterator last() const { return const_iterator(tail_, nullptr); }
 
 private:
     void InitHead() {

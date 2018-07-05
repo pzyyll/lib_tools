@@ -180,7 +180,7 @@ typedef lib_tools::RankList<Key, int> RankType;
 RankType kRanklist;
 
 void Print(RankType &ranklist) {
-    for (auto itr : ranklist) {
+    for (const auto itr : ranklist) {
         cout << "Key: " << itr.first.score << "|" << itr.first.tm <<
             ", id: " << itr.second << endl;
     }
@@ -211,6 +211,10 @@ void Test() {
     cout << "Test" << endl;
 
     Print(bitr, eitr);
+
+    RankType::val_type val = *kRanklist.begin();
+    cout << val.first.score << endl;
+    cout << val.second << endl;
 
     cout << "End Test." << endl;
 }
