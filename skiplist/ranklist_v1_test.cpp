@@ -224,9 +224,28 @@ void Test() {
 
 }
 
+
+struct KeyTest {
+
+    bool operator == (const KeyTest k) const {
+        return i == k.i;
+    }
+
+    int i;
+};
+
 int main() {
     //TestFunc();
-    test_range::Test();
+    //test_range::Test();
+
+    lib_tools::RankList<unsigned, unsigned, std::greater<unsigned>> rank_list;
+
+    rank_list.Update(1,1);
+    rank_list.Update(2,2);
+
+    for (auto itr : rank_list) {
+        cout << itr.first << itr.second << endl;
+    }
 
     return 0;
 }
