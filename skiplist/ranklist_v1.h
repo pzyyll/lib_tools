@@ -2,8 +2,7 @@
 // @Created by czl17 on 2018-3-30.
 // @brief ranklist implement by skiplist with hashtable
 // Key             存储 key 值，例如分数值等，可重复，可自定义结构，需提供默认小于比较
-// Data            存储用户数据，可用于唯一识别标志
-// KeyCompare      Key 比较算法
+// Data            存储用户数据，可用于唯一识别标志, 自定义结构需要提供 hash 函数, 等于比较
 // ValCompare      Data 比较算法
 //
 // func Insert     插入一个键值对, 存在则插入失败
@@ -25,14 +24,16 @@ namespace lib_tools {
 
 template<typename Key, typename Data = int,
          typename KeyCompare = std::less<Key>,
+         typename Hash = std::hash<Data>,
          typename ValCompare = std::equal_to<Data>>
 class RankList {
 public:
+    typedef RankList<Key, Data, KeyCompare, Hash, ValCompare> self_type;
     typedef SkipList<Key, Data, KeyCompare, ValCompare> SkipListType;
+    typedef std::unordered_map<Data, Key, Hash, ValCompare> DictType;
     typedef typename SkipListType::iterator iterator;
     typedef typename SkipListType::const_iterator const_iterator;
     typedef typename SkipListType::val_type val_type;
-    typedef RankList<Key, Data, KeyCompare, ValCompare> self_type;
 
     explicit RankList(const unsigned max_size = UINT32_MAX - 1) : _max_size(max_size) { }
 
@@ -142,7 +143,7 @@ public:
 
 private:
     SkipListType _rank_list;
-    std::unordered_map<Data, Key> _key_map;
+    DictType _key_map;
 
     unsigned _max_size;
 };

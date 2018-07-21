@@ -124,4 +124,13 @@ TEST_F(RankListTest, GetLastInRangeByScoreEmpty) {
     EXPECT_EQ(itr, rank1_.end());
 }
 
+TEST_F(RankListTest, ConstGetLastInRangeByScore) {
+    const auto &const_rank0 = rank0_;
+
+    RankType::const_iterator itr = const_rank0.GetLastInRangeByScore(Key(12, 0), Key(0, 0));
+
+    EXPECT_EQ(itr->first, Key(5, 0));
+    EXPECT_EQ(itr->second, 3);
+}
+
 } //nick namespace

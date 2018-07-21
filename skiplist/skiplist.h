@@ -35,11 +35,11 @@ inline int skRandomLevel() {
 
 struct Range {
     Range(unsigned long long min_, unsigned long long max_)
-            : min(min_), max(max_) { }
+            : rmin(min_), rmax(max_) { }
     ~Range() { }
 
-    unsigned long long min;
-    unsigned long long max;
+    unsigned long long rmin;
+    unsigned long long rmax;
 };
 
 template <typename T>
@@ -269,8 +269,8 @@ public:
     const_iterator FirstInRangeByRank(const Range &range) const {
         if (Empty()) return end();
 
-        unsigned long min = range.min;
-        unsigned long max = range.max;
+        unsigned long min = range.rmin;
+        unsigned long max = range.rmax;
         if (max < min) {
             return end();
         } else if (min > lenth_) {
