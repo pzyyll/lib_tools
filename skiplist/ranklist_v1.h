@@ -3,7 +3,7 @@
 // @brief ranklist implement by skiplist with hashtable
 // Key             存储 key 值，例如分数值等，可重复，可自定义结构，需提供默认小于比较
 // Data            存储用户数据，可用于唯一识别标志, 自定义结构需要提供 hash 函数, 等于比较
-// ValCompare      Data 比较算法
+// DataCompare      Data 小于比较算法
 //
 // func Insert     插入一个键值对, 存在则插入失败
 // func Delete     删除用户数据
