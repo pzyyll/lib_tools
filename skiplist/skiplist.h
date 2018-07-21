@@ -168,7 +168,7 @@ private:
 
 template <typename Key, typename Tp,
           typename KeyCmp = std::less<Key>,
-          typename ValCmp = std::equal_to<Tp>,
+          typename DataCmp = std::less<Tp>,
           typename Alloc = std::allocator<Tp>>
 class SkipList {
 public:
@@ -178,9 +178,9 @@ public:
     typedef SkipListNode<val_type> sl_node;
     typedef sl_node* sl_node_pointer;
     typedef KeyCmp key_cmp_type;
-    typedef ValCmp val_cmp_type;
+    typedef DataCmp data_cmp_type;
     typedef typename Alloc::template rebind<sl_node>::other node_alloc;
-    typedef SkipList<Key, Tp, KeyCmp, ValCmp, Alloc> self_type;
+    typedef SkipList<Key, Tp, KeyCmp, DataCmp, Alloc> self_type;
     typedef val_type& reference;
     typedef val_type* pointer;
     typedef const val_type& const_referrence;
@@ -208,14 +208,14 @@ public:
             while (NULL != x->level[i].forward &&
                     (key_cmp_(x->level[i].forward->data.first, score) ||
                      (KeyEqual(score, x->level[i].forward->data.first) &&
-                      !cmp_(val, x->level[i].forward->data.second))))
+                      data_cmp_(val, x->level[i].forward->data.second))))
                 x = x->level[i].forward;
         }
 
         x = x->level[0].forward;
         if (x != NULL &&
              KeyEqual(score, x->data.first) &&
-              cmp_(val, x->data.second))
+              DataEqual(val, x->data.second))
             return iterator(x, tail_->level[0].forward);
         return end();
     }
@@ -258,7 +258,7 @@ public:
                    !key_cmp_(score, x->level[i].forward->data.first)) {
                 rank += x->level[i].span;
                 x = x->level[i].forward;
-                if (cmp_(x->data.second, val)) {
+                if (DataEqual(x->data.second, val)) {
                     return rank;
                 }
             }
@@ -382,7 +382,7 @@ public:
             while (NULL != x->level[i].forward &&
                     (key_cmp_(x->level[i].forward->data.first, score) ||
                       (KeyEqual(x->level[i].forward->data.first, score) &&
-                        !cmp_(x->level[i].forward->data.second, val)))) {
+                       data_cmp_(x->level[i].forward->data.second, val)))) {
                 ranks[i] += x->level[i].span;
                 x = x->level[i].forward;
             }
@@ -432,7 +432,7 @@ public:
             while (NULL != x->level[i].forward &&
                     (key_cmp_(x->level[i].forward->data.first, score) ||
                       (KeyEqual(x->level[i].forward->data.first, score) &&
-                        !cmp_(x->level[i].forward->data.second, val)))) {
+                       data_cmp_(x->level[i].forward->data.second, val)))) {
                 x = x->level[i].forward;
             }
             update[i] = x;
@@ -440,7 +440,7 @@ public:
         x = x->level[0].forward;
         if (NULL != x &&
              KeyEqual(score, x->data.first) &&
-              cmp_(x->data.second, val)) {
+              DataEqual(x->data.second, val)) {
             DeleteNode(x, update);
             FreeNode(x);
             return 0;
@@ -546,6 +546,10 @@ private:
         return (!key_cmp_(key1, key2) && !key_cmp_(key2, key1));
     }
 
+    bool DataEqual(const data_type &val1, const data_type &val2) const {
+        return (!data_cmp_(val1, val2) && !data_cmp_(val2, val1));
+    }
+
 private:
     sl_node_pointer head_, tail_;
     unsigned long lenth_;
@@ -553,7 +557,7 @@ private:
 
     node_alloc alloc_;
     key_cmp_type key_cmp_;
-    val_cmp_type cmp_;
+    data_cmp_type data_cmp_;
 };
 
 } //namespace lib_tools

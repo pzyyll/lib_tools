@@ -18,19 +18,21 @@
 #define SKIPLIST_RANKLIST_V1_H
 
 #include <unordered_map>
+#include <map>
 #include "skiplist.h"
 
 namespace lib_tools {
 
 template<typename Key, typename Data = int,
          typename KeyCompare = std::less<Key>,
+         typename DataCompare = std::less<Data>,
          typename Hash = std::hash<Data>,
-         typename ValCompare = std::equal_to<Data>>
+         typename HashValCompare = std::equal_to<Data>>
 class RankList {
 public:
-    typedef RankList<Key, Data, KeyCompare, Hash, ValCompare> self_type;
-    typedef SkipList<Key, Data, KeyCompare, ValCompare> SkipListType;
-    typedef std::unordered_map<Data, Key, Hash, ValCompare> DictType;
+    typedef RankList<Key, Data, KeyCompare, DataCompare, Hash, HashValCompare> self_type;
+    typedef SkipList<Key, Data, KeyCompare, DataCompare> SkipListType;
+    typedef std::unordered_map<Data, Key, Hash, HashValCompare> DictType;
     typedef typename SkipListType::iterator iterator;
     typedef typename SkipListType::const_iterator const_iterator;
     typedef typename SkipListType::val_type val_type;

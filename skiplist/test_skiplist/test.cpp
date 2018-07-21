@@ -85,7 +85,7 @@ TEST_F(SkiplistTest, Search) {
 TEST_F(SkiplistTest, SearchFirst) {
     auto itr = rank0_.SearchFirst(Key(12, 0));
     ASSERT_TRUE(itr != rank0_.end());
-    EXPECT_EQ(6, itr->second) << "SearchFirst un match.";
+    EXPECT_EQ(4, itr->second) << "SearchFirst un match.";
     EXPECT_EQ(12, (*itr).first.score);
     EXPECT_EQ(0, (*itr).first.tm);
 
@@ -110,7 +110,10 @@ TEST_F(SkiplistTest, GetRank) {
     EXPECT_EQ(1, rank1);
 
     auto rank2 = rank0_.GetRank(Key(12, 0), 4);
-    EXPECT_EQ(6, rank2);
+    EXPECT_EQ(5, rank2);
+
+    auto rank3 = rank0_.GetRank(Key(12, 0), 6);
+    EXPECT_EQ(6, rank3);
 
     auto rank_end = rank0_.GetRank(Key(0, 0), 0);
     EXPECT_EQ(0, rank_end);
@@ -137,7 +140,7 @@ TEST_F(SkiplistTest, FirstInRangeByRank) {
 
     itr = rank0_.FirstInRangeByRank(Range(6, 10));
     ASSERT_TRUE(itr != rank0_.end());
-    EXPECT_EQ(4, itr->second);
+    EXPECT_EQ(6, itr->second);
     EXPECT_EQ(12, (*itr).first.score);
     EXPECT_EQ(0, (*itr).first.tm);
 
@@ -156,7 +159,7 @@ TEST_F(SkiplistTest, FirstInRangeByRank) {
 
     itr = rank0_.FirstInRangeByRank(Range(6, 6));
     ASSERT_TRUE(itr != rank0_.end());
-    EXPECT_EQ(4, itr->second);
+    EXPECT_EQ(6, itr->second);
     EXPECT_EQ(12, (*itr).first.score);
     EXPECT_EQ(0, (*itr).first.tm);
 
@@ -182,13 +185,13 @@ TEST_F(SkiplistTest, FirstInRangeByScore) {
 
     itr = rank0_.FirstInRangeByScore(Key(12, 0), Key(100, 100));
     ASSERT_TRUE(itr != rank0_.end());
-    EXPECT_EQ(6, itr->second);
+    EXPECT_EQ(4, itr->second);
     EXPECT_EQ(12, (*itr).first.score);
     EXPECT_EQ(0, (*itr).first.tm);
 
     itr = rank0_.FirstInRangeByScore(Key(12, 0), Key(12, 0));
     ASSERT_TRUE(itr != rank0_.end());
-    EXPECT_EQ(6, itr->second);
+    EXPECT_EQ(4, itr->second);
     EXPECT_EQ(12, (*itr).first.score);
     EXPECT_EQ(0, (*itr).first.tm);
 
@@ -208,19 +211,19 @@ TEST_F(SkiplistTest, LastInRangeByScore) {
 
     itr = rank0_.LastInRangeByScore(Key(0, 0), Key(100, 100));
     ASSERT_TRUE(itr != rank0_.end());
-    EXPECT_EQ(4, itr->second);
+    EXPECT_EQ(6, itr->second);
     EXPECT_EQ(12, (*itr).first.score);
     EXPECT_EQ(0, (*itr).first.tm);
 
     itr = rank0_.LastInRangeByScore(Key(12, 0), Key(100, 100));
     ASSERT_TRUE(itr != rank0_.end());
-    EXPECT_EQ(4, itr->second);
+    EXPECT_EQ(6, itr->second);
     EXPECT_EQ(12, (*itr).first.score);
     EXPECT_EQ(0, (*itr).first.tm);
 
     itr = rank0_.LastInRangeByScore(Key(12, 0), Key(12, 0));
     ASSERT_TRUE(itr != rank0_.end());
-    EXPECT_EQ(4, itr->second);
+    EXPECT_EQ(6, itr->second);
     EXPECT_EQ(12, (*itr).first.score);
     EXPECT_EQ(0, (*itr).first.tm);
 
@@ -302,7 +305,7 @@ TEST_F(SkiplistTest, Clear) {
 TEST_F(SkiplistTest, last) {
     auto itr = rank0_.last();
     ASSERT_TRUE(itr != rank0_.end());
-    EXPECT_EQ(4, itr->second);
+    EXPECT_EQ(6, itr->second);
     EXPECT_EQ(12, (*itr).first.score);
     EXPECT_EQ(0, (*itr).first.tm);
 
@@ -311,7 +314,7 @@ TEST_F(SkiplistTest, last) {
 
     itr = rank0_.last();
     ASSERT_TRUE(--itr != rank0_.end());
-    EXPECT_EQ(6, itr->second);
+    EXPECT_EQ(4, itr->second);
     EXPECT_EQ(12, (*itr).first.score);
     EXPECT_EQ(0, (*itr).first.tm);
 }
