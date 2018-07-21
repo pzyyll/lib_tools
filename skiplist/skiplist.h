@@ -207,8 +207,8 @@ public:
         for (int i = level_ - 1; i >= 0; --i) {
             while (NULL != x->level[i].forward &&
                     (key_cmp_(x->level[i].forward->data.first, score) ||
-                     (KeyEqual(score, x->level[i].forward->data.first) &&
-                      data_cmp_(val, x->level[i].forward->data.second))))
+                     (KeyEqual(x->level[i].forward->data.first, score) &&
+                      data_cmp_(x->level[i].forward->data.second, val))))
                 x = x->level[i].forward;
         }
 
