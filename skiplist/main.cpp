@@ -68,6 +68,8 @@ public:
         skiplist.Update(b, b.lid);
         skiplist.Update(a, a.lid);
 
+        cout << "rank1001 :" << skiplist.GetRank(a.lid) << endl;
+        cout << "rank1002 :" << skiplist.GetRank(b.lid) << endl;
         P();
     }
 
