@@ -255,12 +255,15 @@ public:
         sl_node_pointer x = head_;
         for (int i = level_ - 1; i >= 0; --i) {
             while (NULL != x->level[i].forward &&
-                   !key_cmp_(score, x->level[i].forward->data.first)) {
+                   (key_cmp_(x->level[i].forward->data.first, score) ||
+                    (KeyEqual(x->level[i].forward->data.first, score) &&
+                     !data_cmp_(val, x->level[i].forward->data.second)))) {
                 rank += x->level[i].span;
                 x = x->level[i].forward;
-                if (DataEqual(x->data.second, val)) {
-                    return rank;
-                }
+            }
+
+            if (DataEqual(x->data.second, val)) {
+                return rank;
             }
         }
         return 0;
