@@ -179,8 +179,8 @@ struct Key {
 typedef lib_tools::RankList<Key, int> RankType;
 RankType kRanklist;
 
-void Print(RankType &ranklist) {
-    for (const auto itr : ranklist) {
+void Print(const RankType &ranklist) {
+    for (RankType::val_type itr : ranklist) {
         cout << "Key: " << itr.first.score << "|" << itr.first.tm <<
             ", id: " << itr.second << endl;
     }
