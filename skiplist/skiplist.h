@@ -323,7 +323,7 @@ public:
         assert(x != NULL);
 
         //注意找到的节点分数不要大于max
-        if (max < x->data.first)
+        if (key_cmp_(max, x->data.first))
             return end();
 
         return iterator(x, tail_->level[0].forward);
