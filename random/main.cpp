@@ -8,12 +8,12 @@ using namespace std;
 using namespace lib_tools;
 
 int main(int argc, char **argv) {
-    std::set<int> vals{1,3,4,5,6,7};
-    std::vector<double> ws{5,1,1,1,1,1};
+    std::set<int> vals{1,2,5,25};
+    std::vector<double> ws{76500,15300,10200,1};
 
     std::map<int, int> imapcnt;
 
-    for (unsigned i = 0; i < 10000; ++i) {
+    for (unsigned i = 0; i < 1000000; ++i) {
 
         auto res = Random::RandomSample(vals, ws, argc);
         for (auto itr : res) {
@@ -27,6 +27,11 @@ int main(int argc, char **argv) {
     for (auto itr : imapcnt) {
         cout << itr.first << "|" << itr.second << endl;
     }
+
+
+    std::vector<int> weights{5,5};
+    unsigned resi = Random::DiscreteDist(weights.begin(), weights.end());
+    cout << resi << endl;
 
     cout << "end" << endl;
     return 0;
