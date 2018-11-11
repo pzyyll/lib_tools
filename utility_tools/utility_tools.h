@@ -44,9 +44,11 @@ template <typename Iter, typename Tp>
 unsigned IndexLowerBoundRightOpen(Iter begin_iter, Iter end_iter, const Tp &val) {
     Iter first_iter = std::lower_bound(begin_iter, end_iter, val);
     unsigned distance = std::distance(begin_iter, first_iter);
-    if (val == *first_iter) {
+
+    if (first_iter != end_iter && val == *first_iter) {
         ++distance;
     }
+
     return distance;
 };
 
@@ -55,9 +57,11 @@ template <typename Iter, typename Tp, typename Compare>
 unsigned IndexLowerBoundRightOpen(Iter begin_iter, Iter end_iter, const Tp &val, Compare comp) {
     Iter first_iter = std::lower_bound(begin_iter, end_iter, val, comp);
     unsigned distance = std::distance(begin_iter, first_iter);
-    if (val == *first_iter) {
+
+    if (first_iter != end_iter && val == *first_iter) {
         ++distance;
     }
+
     return distance;
 };
 
