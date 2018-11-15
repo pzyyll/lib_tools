@@ -3,25 +3,47 @@
 #include <set>
 #include <vector>
 #include <array>
+#include <functional>
 
 #include "utility_tools.h"
 
 using namespace std;
 using namespace lib_tools;
 
+class Foo {
+public:
+    Foo(int &mem_refv) : mem_ref(mem_refv) { }
+
+    int &mem_ref;
+};
+
+template <typename T, typename ...Args>
+T *Create(Args&& ...args) {
+    T *new_point = new T(std::forward<Args>(args)...);
+    return new_point;
+};
+
 int main(int argc, char **argv) {
 
-    vector<int> test_nums{0, 10, 20, 30, 50, 60, 100};
+    int z = 10;
 
-    cout << IndexLowerBound(test_nums.begin(), test_nums.end(), 10) << endl;
-    cout << IndexLowerBoundRightOpen(test_nums.begin(), test_nums.end(), 10) << endl;
+    Foo fooz(z);
 
-    array<int, 10> arr10 = {1};
+    cout << (void *)(&z) << endl;
+    cout << (void *)(&fooz.mem_ref) << endl;
 
-    arr10.
-    for (unsigned i = 0; i < arr10.size(); ++i) {
-        cout << arr10[i] << endl;
-    }
+    cout << "non correct.---" << endl;
+    Foo *foozp = Create<Foo>(z);
+    cout << (void *)(&foozp->mem_ref) << endl;
+    cout << foozp->mem_ref << endl;
+    cout << "non correct.---" << endl;
+
+
+    cout << "correct1.---" << endl;
+    Foo *foozpc = Create<Foo>(std::ref(z));
+    cout << (void *)(&foozpc->mem_ref) << endl;
+    cout << foozpc->mem_ref << endl;
+    cout << "correct1.---" << endl;
 
     cout << "end" << endl;
     return 0;

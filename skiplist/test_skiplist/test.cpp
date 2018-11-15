@@ -59,6 +59,7 @@ protected:
     
     RankType rank0_;
     RankType rank1_;
+    RankType rank2_; // test_copy
     MapType map_sort_;  //与标准库的排序做比较，从而确定排序结果是否正确
     std::vector<std::pair<Key, int>> test_case_;
 };
@@ -335,6 +336,61 @@ TEST_F(SkiplistTest, TestSortWithStdMap) {
 
     EXPECT_EQ(cnt, rank0_.Lenth());
     EXPECT_EQ(cnt, map_sort_.size());
+}
+
+TEST_F(SkiplistTest, TestCopyFrom) {
+    rank2_.CopyFrom(rank0_);
+
+    EXPECT_EQ(rank2_.Lenth(), rank0_.Lenth());
+
+    auto rank2_itr = rank2_.begin();
+    auto rank0_itr = rank0_.begin();
+    //auto map_itr = map_sort_.begin();
+
+    unsigned cnt = 0;
+    for ( ;
+        rank2_itr != rank2_.end() && rank0_itr != rank0_.end();
+        ++rank2_itr, ++rank0_itr) {
+        EXPECT_EQ(rank2_itr->first, rank0_itr->first);
+        EXPECT_EQ(rank2_itr->second, rank0_itr->second);
+        //EXPECT_EQ(rank2_itr->first, map_itr->first);
+        //EXPECT_EQ(rank2_itr->second, map_itr->second);
+        ++cnt;
+    }
+
+    EXPECT_EQ(cnt, rank2_.Lenth());
+    EXPECT_EQ(cnt, rank0_.Lenth());
+
+
+    auto trank0(rank0_);
+    EXPECT_EQ(trank0.Lenth(), rank0_.Lenth());
+    auto trank0_itr = trank0.begin();
+    rank0_itr = rank0_.begin();
+    cnt = 0;
+    for ( ;
+            trank0_itr != trank0.end() && rank0_itr != rank0_.end();
+            ++trank0_itr, ++rank0_itr) {
+        EXPECT_EQ(trank0_itr->first, rank0_itr->first);
+        EXPECT_EQ(trank0_itr->second, rank0_itr->second);
+        ++cnt;
+    }
+    EXPECT_EQ(cnt, rank0_.Lenth());
+
+
+    RankType trank1;
+    trank1 = rank0_;
+    EXPECT_EQ(trank1.Lenth(), rank0_.Lenth());
+    auto trank1_itr = trank1.begin();
+    rank0_itr = rank0_.begin();
+    cnt = 0;
+    for ( ;
+            trank1_itr != trank1.end() && rank0_itr != rank0_.end();
+            ++trank1_itr, ++rank0_itr) {
+        EXPECT_EQ(trank1_itr->first, rank0_itr->first);
+        EXPECT_EQ(trank1_itr->second, rank0_itr->second);
+        ++cnt;
+    }
+    EXPECT_EQ(cnt, rank0_.Lenth());
 }
 
 

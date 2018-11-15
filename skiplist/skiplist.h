@@ -196,6 +196,19 @@ public:
     {
         InitHead();
     };
+
+    SkipList(const self_type &rhs)
+            : head_(NULL),
+              tail_(NULL),
+              lenth_(0),
+              level_(1) {
+        CopyFrom(rhs);
+    }
+
+    self_type &operator=(const self_type &rhs) {
+        CopyFrom(rhs);
+    }
+
     ~SkipList() {
         Deinit();
     };
@@ -461,6 +474,16 @@ public:
     void Clear() {
         Deinit();
         InitHead();
+    }
+
+    void CopyFrom(const self_type &from) {
+        if (this != std::addressof(from)) {
+            Clear();
+            const_iterator iter = from.begin();
+            for (; iter != from.end(); ++iter) {
+                this->Insert(iter->first, iter->second);
+            }
+        }
     }
 
     unsigned long Lenth() const { return lenth_; }

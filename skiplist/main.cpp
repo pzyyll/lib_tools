@@ -3,6 +3,7 @@
 #include <map>
 #include <type_traits>
 #include <memory>
+#include <list>
 
 #include "skiplist.h"
 #include "ranklist_v1.h"
