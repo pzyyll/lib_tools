@@ -39,6 +39,19 @@ public:
 
     explicit RankList(const unsigned max_size = UINT32_MAX - 1) : _max_size(max_size) { }
 
+    RankList(const self_type &rhs) :
+            _rank_list(rhs._rank_list),
+            _key_map(rhs._key_map),
+            _max_size(rhs._max_size) { }
+
+    self_type &operator=(const self_type &rhs) {
+        if (this != std::addressof(rhs)) {
+            _rank_list = rhs._rank_list;
+            _key_map = rhs._key_map;
+            _max_size = rhs._max_size;
+        }
+    }
+
     ~RankList() = default;
 
     bool Insert(const Key &key, const Data &identify) {

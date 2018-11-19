@@ -59,6 +59,12 @@ public:
 
         skiplist.Insert(a, a.lid);
         skiplist.Insert(b, b.lid);
+        skiplist.Insert(b, b.lid + 1);
+        skiplist.Insert(b, b.lid + 2);
+        skiplist.Insert(b, b.lid + 3);
+        skiplist.Insert(b, b.lid + 4);
+        skiplist.Insert(b, b.lid + 5);
+        skiplist.Insert(b, b.lid + 6);
     }
 
     void Up() {

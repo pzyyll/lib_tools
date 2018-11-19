@@ -133,4 +133,52 @@ TEST_F(RankListTest, ConstGetLastInRangeByScore) {
     EXPECT_EQ(itr->second, 3);
 }
 
+
+TEST_F(RankListTest, TempTestCopy) {
+    RankType temp_rank = rank0_;
+
+    EXPECT_EQ(temp_rank.GetSize(), rank0_.GetSize());
+
+    auto temp_itr = temp_rank.begin();
+    auto itr0 = rank0_.begin();
+    for (; temp_itr != temp_rank.end() && itr0 != rank0_.end(); ++temp_itr, ++itr0) {
+        EXPECT_EQ(temp_itr->first, itr0->first);
+        EXPECT_EQ(temp_itr->second, temp_itr->second);
+    }
+}
+
+TEST_F(RankListTest, TempTestCopyConstGetLastInRangeByScore) {
+    RankType temp_rank = rank0_;
+
+    const auto &const_rank0 = temp_rank;
+
+    RankType::const_iterator itr = const_rank0.GetLastInRangeByScore(Key(12, 0), Key(0, 0));
+
+    EXPECT_EQ(itr->first, Key(5, 0));
+    EXPECT_EQ(itr->second, 3);
+}
+
+
+TEST_F(RankListTest,  TempTestCopyTestSortWithStdMap) {
+    //EXPECT_EQ(map_sort_.size(), rank0_.GetSize());
+    RankType temp_rank(rank0_);
+
+    auto rank_itr = temp_rank.begin();
+    auto map_itr = map_sort_.begin();
+
+    unsigned cnt = 0;
+    for ( ;
+            rank_itr != rank0_.end() && map_itr != map_sort_.end();
+            ++rank_itr, ++map_itr) {
+        EXPECT_EQ((*rank_itr).first, (*map_itr).first);
+        EXPECT_EQ((*rank_itr).second, (*map_itr).second);
+        ++cnt;
+    }
+
+    EXPECT_EQ(cnt, rank0_.GetSize());
+    EXPECT_EQ(cnt, temp_rank.GetSize());
+    //EXPECT_EQ(cnt, map_sort_.size());
+}
+
+
 } //nick namespace

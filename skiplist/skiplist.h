@@ -202,11 +202,13 @@ public:
               tail_(NULL),
               lenth_(0),
               level_(1) {
+        InitHead();
         CopyFrom(rhs);
     }
 
     self_type &operator=(const self_type &rhs) {
         CopyFrom(rhs);
+        return *this;
     }
 
     ~SkipList() {
